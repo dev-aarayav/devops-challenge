@@ -10,7 +10,7 @@
 - Instructions
     - Clone the project locally in Ubuntu machine.
     - Run the bash script with ./nginx_setup.sh
-    - Open a web browser and access http://localhost (or your machine's IP) to check if Nginx is serving files correctly.
+    - Open a web browser and access http://localhost:80 (or your machine's IP) to check if Nginx is serving files correctly.
 
 
 

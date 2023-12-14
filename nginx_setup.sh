@@ -2,7 +2,16 @@
 
 #VAR
 SCRIPT="$0"
-SCRIPT_PATH="/home/aarayav/localfiles"
+HOST_PATH="/home/aarayav/nginx_content"
+HTML_CONTENT="<html>
+<head>
+    <title>CONGRATULATIONS!</title>
+</head>
+<body>
+    <h1>You have successfully executed the Docker NGNIX automated script!</h1>
+    <p>This is a sample index.html file created by a Bash script.</p>
+</body>
+</html>"
 
 # Function to check if a Docker image exists
 image_verf(){
@@ -22,7 +31,7 @@ image_verf(){
     then
         echo "The Docker image '$IMAGE_NAME' is installed."
         echo "Running Docker container named 'mynginx' from the '$IMAGE_NAME' image"
-        docker run -d -p 80:80 -v "$SCRIPT_PATH":/usr/share/nginx/html --name mynginx "$IMAGE_NAME"
+        docker run -d -p 8000:80 -v "$HOST_PATH":/usr/share/nginx/html --name mynginx "$IMAGE_NAME"
 
     else
         echo "The Docker image '$IMAGE_NAME' is not installed."
@@ -40,13 +49,21 @@ chmod 755 ${SCRIPT}
 echo "Script '$SCRIPT' is now executable."
 
 # Verification of directory existance
-if [ -e "$SCRIPT_PATH" ]
+if [ -e "$HOST_PATH" ]
 then
-    echo "Path '$SCRIPT_PATH' exists."
+    chmod -R 777 "$HOST_PATH"
+    echo "Path '$HOST_PATH' exists."
+    echo "$HTML_CONTENT" > "$HOST_PATH/index.html"
+    echo "index.html created for Nginx Server"
 else
-    echo "Path '$SCRIPT_PATH' does not exist."
-    mkdir -p "$SCRIPT_PATH" # Create directory
-    echo "Directory '$SCRIPT_PATH' created."
+    echo "Path '$HOST_PATH' does not exist."
+    mkdir -p "$HOST_PATH" # Create directory
+    echo "Directory '$HOST_PATH' created."
+    chmod -R 777 "$HOST_PATH"
+    echo "Granted permissions that allow the Docker process to access it"
+    echo "$HTML_CONTENT" > "$HOST_PATH/index.html"
+    echo "index.html created for Nginx Server"
+
 fi
 
 # Call the function with the image name as an argument
