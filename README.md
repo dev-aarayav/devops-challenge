@@ -16,3 +16,6 @@
 
 
 - Include any additional commands needed to complete the setup or for file downloading purposes. For example, you might include commands to add files to the directory mounted in the Nginx container or curl/wget commands for downloading files.
+
+- Seach for user "aarayav" in "group" file to check if is part of Docker group (also display group ID)
+```cat /etc/group | grep docker```

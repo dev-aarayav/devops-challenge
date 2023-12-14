@@ -24,6 +24,10 @@ docker_inst() {
 
     # Check Docker version
     docker --version
+
+    # Verify that the Docker Engine installation is successful by running the "hello-world" image. This command downloads 
+    # a test image and runs it in a container. When container runs it prints a confirmation message and exits.
+    sudo docker run hello-world
 }
 
 # Call the function to install Docker
