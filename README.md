@@ -7,7 +7,7 @@
     - Install Ubuntu OS from [Microsoft Store](https://www.microsoft.com/store/productId/9MTTCL66CPXJ?ocid=pdpshare)
     - Install Docker in Ubuntu OS, follow [Docker official documentation](https://docs.docker.com/engine/install/ubuntu/)
 
-### Instructions
+- Instructions
     - Clone the project locally in Ubuntu machine.
     - Run the bash script with ./nginx_setup.sh
     - Open a web browser and access http://localhost (or your machine's IP) to check if Nginx is serving files correctly.
