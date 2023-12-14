@@ -5,10 +5,10 @@ SCRIPT="$0"
 HOST_PATH="/home/aarayav/nginx_content"
 HTML_CONTENT="<html>
 <head>
-    <title>CONGRATULATIONS!</title>
+    <title>Nginx Server</title>
 </head>
 <body>
-    <h1>You have successfully executed the Docker NGNIX automated script!</h1>
+    <h1>NGINX Server Running!</h1>
     <p>This is a sample index.html file created by a Bash script.</p>
 </body>
 </html>"
