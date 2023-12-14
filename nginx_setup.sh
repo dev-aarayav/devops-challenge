@@ -13,6 +13,17 @@ HTML_CONTENT="<html>
 </body>
 </html>"
 
+# Function to check if Docker is installed
+check_docker_installed() {
+    if ! command -v docker &>/dev/null; then
+        echo "Docker is not installed. Please install Docker to proceed."
+        exit 1
+    fi
+}
+
+# Check if Docker is installed
+check_docker_installed
+
 # Function to check if a Docker image exists
 image_verf(){
 
