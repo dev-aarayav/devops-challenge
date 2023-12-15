@@ -2,20 +2,18 @@
 ### by Alexander Araya Vega
 
 ### 1. Nginx web server to expose files for download
-- Prerequisites
+- Prerequisites (Windows)
     - Install WSL, follow [official documentation](https://techcommunity.microsoft.com/t5/windows-11/how-to-install-the-linux-windows-subsystem-in-windows-11/m-p/2701207/page/2)
-    - Install Ubuntu OS from [Microsoft Store](https://www.microsoft.com/store/productId/9MTTCL66CPXJ?ocid=pdpshare)
-    - Install Docker in Ubuntu OS, follow [Docker official documentation](https://docs.docker.com/engine/install/ubuntu/)
+    - Install Ubuntu OS <18.x.x from [Microsoft Store](https://www.microsoft.com/store/productId/9MTTCL66CPXJ?ocid=pdpshare)
 
 - Instructions
     - Clone the project locally in Ubuntu machine.
-    - Run the bash script with ./nginx_setup.sh
-    - Open a web browser and access http://localhost:80 (or your machine's IP) to check if Nginx is serving files correctly.
+    - Open folder "docker-scripts" and use script ```nginx_setup.sh```
+    - Execution command for the script: ```$ ./nginx_setup.sh nginx```
+    - Run the following command and check if the Docker container is running: ```$ docker ps```
+     * NOTE: It should display an output like below:
+     ![Dcoker ps output](image.png)
+    - Open a web browser and access http://localhost:8000 to see Nginx index web page running.
+     * NOTE: It should display the following text in browser:
 
 
-
-
-- Include any additional commands needed to complete the setup or for file downloading purposes. For example, you might include commands to add files to the directory mounted in the Nginx container or curl/wget commands for downloading files.
-
-- Seach for user "aarayav" in "group" file to check if is part of Docker group (also display group ID)
-```cat /etc/group | grep docker```
