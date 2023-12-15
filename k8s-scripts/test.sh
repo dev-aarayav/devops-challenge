@@ -154,6 +154,6 @@ echo "--------------------------------"
 echo "--------------------------------"
 sleep 5
 
-# Initiate Minikube cluster
-# minikube delete
-# minikube start --kubernetes-version=v1.27.0
+# ------------------------------------------------------------------------
+# FUNCTIONALITY
+
