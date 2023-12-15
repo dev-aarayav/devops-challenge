@@ -17,7 +17,7 @@
      ![Dcoker ps output](image.png)
     - Open a web browser and access http://localhost:8000 to see Nginx index web page running.
      * NOTE: It should display the following text in browser:
-
+    ![Nginx Browser Output](image-3.png)
 
 ### 2. Run Harbor Resitry in Kubernetes cluster
 - Prerequisites (Windows WSL - Ubuntu)
