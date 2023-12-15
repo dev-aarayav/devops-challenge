@@ -46,14 +46,9 @@ upload_to_harbor() {
     docker push localhost:5000/my-project/my-image:v1
 }
 
-pull_from_harbor() {
-
-    # docker pull localhost:5000/my-project/my-image:v1
-    docker pull localhost:5000/my-project/my-image:v1
-}
-
 # Function to pull  Docker images from Harbor registry
 pull_from_harbor() {
     # Pull the image from Harbor registry
-    docker pull <harbor-registry>/<project>/<image-name>:<tag>
+    # docker pull <harbor-registry>/<project>/<image-name>:<tag>
+    docker pull localhost:5000/my-project/my-image:v1
 }
