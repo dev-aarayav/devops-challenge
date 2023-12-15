@@ -1,54 +1,128 @@
-# FUNCTIONALITY
+#!/bin/bash
+
+# Check if the namespace argument is provided
+if [ -z "$4" ]
+then
+    echo "Please provide the namespace for Harbor deployment as the fourth argument."
+    exit 1
+fi
+
+# VARIABLES
+HARBOR_NAMESPACE="$4" # example `harbor`, `project-harbor`
+HARBOR_REGISTRY="localhost:5000"
+PROJECT_NAME="aarayav-project"
+TAG="v1"
+
+# Function to upload Docker images into Harbor registry
+upload_to_harbor() {
+
+    # LOCAL VARS
+    DIR_DCK="$1" 
+    IMAGE_NAME="${2:-harbor-image}" 
+    PROJECT_NAME="${3:-$PROJECT_NAME}" # Reassigning the global variable if the third parameter is present
+
+    docker build -t "$IMAGE_NAME:$TAG" "$DIR_DCK" # Build the Docker image
+    docker tag "$IMAGE_NAME:$TAG" "$HARBOR_REGISTRY/$PROJECT_NAME/$IMAGE_NAME:$TAG" # Tag the image for Harbor registry
+    docker push "$HARBOR_REGISTRY/$PROJECT_NAME/$IMAGE_NAME:$TAG" # Push the image to Harbor registry
+
+}
+
+# Function to pull  Docker images from Harbor registry
+pull_from_harbor() {
+
+    # LOCAL VARS
+    IMAGE_NAME_PULL="$1"
+
+    # Pull the image from Harbor registry
+    docker pull "$HARBOR_REGISTRY/$PROJECT_NAME/$IMAGE:$TAG" # docker pull <harbor-registry>/<project>/<image-name>:<tag>
+}
 
 
-# Initiate Minikube cluster
-
-minikube delete
-minikube start --kubernetes-version=v1.27.0
-
-# Download Helm binary
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-
-# Install Helm
-chmod 700 get_helm.sh
-./get_helm.sh
-
-# Add Harbor Helm repository
-helm repo add harbor https://helm.goharbor.io
-
-# Install Harbor chart (adjust values as needed)
-helm install harbor harbor/harbor
-
-# Function to check if Harbor is running and accesible within Minikube cluster.
-check_harbor() {
-    HARBOR_URL="http://$(minikube ip):<HARBOR_PORT>"
+# Function to check if Harbor UI is running and accesible within Minikube cluster. Then it uploads or pulls an image depending on existance...
+check_and_manage_image() {
+    HARBOR_URL="http://$(minikube ip):80" # exposed Ports can be 80 or 443
     RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" $HARBOR_URL)
-    
-    if [ $RESPONSE -eq 200 ]; then
+
+    if [ $RESPONSE -eq 200 ]
+    then
         echo "Harbor is running and accessible at $HARBOR_URL"
+        
+        # Check if the specific image exists in the Harbor registry
+        IMAGE_EXISTS=$(docker pull "$HARBOR_REGISTRY/$PROJECT_NAME/$1:$TAG" 2>&1 | grep -c "manifest unknown")
+        
+        if [ $IMAGE_EXISTS -eq 0 ] 
+        then
+            echo "Image exists in Harbor, pulling..."
+            pull_from_harbor "$1"
+        else
+            echo "Image doesn't exist in Harbor, uploading..."
+            upload_to_harbor "$1" "$2" "$3"
+        fi
     else
         echo "Harbor is not accessible at $HARBOR_URL"
     fi
 }
 
-# Function to upload Docker images into Harbor registry
-upload_to_harbor() {
-    # Build the Docker image
-    # docker build -t <image-name>:<tag> <path-to-dockerfile>
-    docker build -t my-image:v1 /path/to/Dockerfile
-    
-    # Tag the image for Harbor registry
-    # docker tag <image-name>:<tag> <harbor-registry>/<project>/<image-name>:<tag>
-    docker tag my-image:v1 localhost:5000/my-project/my-image:v1
+# Initiate Minikube cluster
 
-    # Push the image to Harbor registry
-    # docker push <harbor-registry>/<project>/<image-name>:<tag>
-    docker push localhost:5000/my-project/my-image:v1
-}
+echo "Initializing Minikube cluster {K_CTL}..."
+minikube delete
+minikube start --kubernetes-version=v1.27.0
+echo "Minikube cluster up & running..."
+echo "-------------------------------"
+echo "-------------------------------"
+sleep 5 # Stop here to understand better functionality.
 
-# Function to pull  Docker images from Harbor registry
-pull_from_harbor() {
-    # Pull the image from Harbor registry
-    # docker pull <harbor-registry>/<project>/<image-name>:<tag>
-    docker pull localhost:5000/my-project/my-image:v1
-}
+# Wait for Minikube to be ready
+echo "Waiting for Minikube to be ready..."
+while true; do
+    STATUS=$(kubectl get nodes --no-headers | grep "Ready")
+    if [ -n "$STATUS" ]; then
+        echo "Still waiting for Minikube to be ready"
+        break
+        echo "Validation completed..."
+    fi
+    sleep 5 # Stop to understand process
+done
+echo "Minikube is ready!"
+sleep 5 # Stop to understand process
+
+
+# Download Helm binary & installation
+echo "Downloading Helm binary..."
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+echo "Installing Helm..."
+chmod 700 get_helm.sh
+./get_helm.sh
+echo "Helm installation completed..."
+echo "-------------------------------"
+echo "-------------------------------"
+sleep 5 # Stop here to understand better functionality.
+
+# Add Harbor Helm repository & installation of Harbor chart from Helm Hub
+echo "Starting download and installation of Harbor..."
+helm repo add harbor https://helm.goharbor.io
+helm install harbor harbor/harbor --namespace "$HARBOR_NAMESPACE" # helm install <release-name> <chart-version>
+echo "Harbor deployment completed in the namespace: $HARBOR_NAMESPACE."
+echo "-------------------------------"
+echo "-------------------------------"
+sleep 5 # Stop here to understand better functionality.
+# EXTRA use helm show values harbor/harbor to see deault values
+
+# Wait for Harbor deployment to be ready
+echo "Waiting for Harbor deployment to be ready..."
+while true; do
+    READY_PODS=$(kubectl get pods -n "$HARBOR_NAMESPACE" | grep -E "harbor-.*\s+([1-9][0-9]*)(\/)([1-9][0-9]*)(\s+)(Running|Completed|Succeeded)" | wc -l)
+    TOTAL_PODS=$(kubectl get pods -n "$HARBOR_NAMESPACE" | grep -E "harbor-" | wc -l)
+
+    if [ "$READY_PODS" -eq "$TOTAL_PODS" ]; then
+        break
+    fi
+
+    sleep 5 # Stop here to understand better functionality.
+done
+
+echo "Harbor deployment is ready!"
+
+# Call of the function to build, upload or pull docker image into Harbor registry.
+check_and_manage_image

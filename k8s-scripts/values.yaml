@@ -1,0 +1,53 @@
+ingress:
+  enabled: true
+  hosts:
+    core: harbor.domain.com
+  annotations: 
+    # Add any specific annotations for your Ingress controller
+  tls:
+    - secretName: harbor-tls
+      hosts:
+        - harbor.domain.com
+
+externalURL: https://harbor.domain.com
+
+persistence:
+  enabled: true
+  storageClass: <storage-class-name>
+  size: 10Gi
+  annotations: {}
+  accessMode: ReadWriteOnce
+
+database:
+  type: internal
+  internal:
+    name: harbor-db
+    image: postgres:12.6
+    imageTag: "12.6"
+    ...
+
+registry:
+  storage:
+    secretName: registry-storage-secret
+    ...
+
+secret:
+  secretName: harbor-admin-secret
+
+notary:
+  enabled: true
+notifier:
+  enabled: true
+  smtp:
+    enabled: true
+    host: smtp.domain.com
+    port: 25
+    ...
+
+resources:
+  requests:
+    memory: 1Gi
+    cpu: 500m
+  limits:
+    memory: 2Gi
+    cpu: 1

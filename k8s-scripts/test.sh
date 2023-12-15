@@ -7,7 +7,6 @@ CMD_KLET=$(kubelet --version)
 CMD_KADM=$(kubeadm version)
 
 
-
 # Function to install Docker
 docker_inst() {
     echo "Starting Docker installation..."
