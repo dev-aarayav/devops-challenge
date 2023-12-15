@@ -1,5 +1,7 @@
 #!/bin/bash
 
+K8S_SCRIPT="$0"
+
 # Function to install Docker
 docker_inst() {
     echo "Starting Docker installation..."
@@ -44,12 +46,65 @@ check_docker_installed() {
     fi
 }
 
-# Function to install Kubernetes & Minikube
+# Function to check if Minikube is installed
+check_minikube_installed() {
+    if ! command -v minikube &>/dev/null 
+    then
+        echo "Minikube is not installed. Proceeding with installation..."
+        # Call the function to install Minikube
+        install_minikube
+    else
+        echo "Minikube is already installed..."
+        echo "Proceeding with next steps..."
+        echo "--------------------------------"
+        echo "--------------------------------"
+        sleep 5
+    fi
+}
+
+# Function to install Minikube
 install_minikube() {
     echo "Starting Minikube installation..."
 
     # Check if Docker is installed
     check_docker_installed
+
+    # Step 1: Download and install Minikube
+    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    sudo install minikube /usr/local/bin/
+
+    # Step 2: Start Minikube cluster
+    minikube start --driver=docker
+
+    # Step 3: Verify Minikube installation
+    minikube status
+
+    echo "Minikube installation complete."
+    echo "--------------------------------"
+    echo "--------------------------------"
+    sleep 5
+}
+
+
+# Function to check if Kubernetes tools are installed
+check_kubernetes_tools_installed() {
+    if ! command -v kubectl &>/dev/null || ! command -v kubelet &>/dev/null || ! command -v kubeadm &>/dev/null; then
+        echo "Kubernetes tools are not installed. Proceeding with installation..."
+        # Call the function to install Kubernetes tools
+        install_kubernetes_tools
+    else
+        echo "Kubernetes tools are already installed..."
+        echo "Proceeding with next steps..."
+        echo "--------------------------------"
+        echo "--------------------------------"
+        sleep 5
+        check_minikube_installed
+    fi
+}
+
+# Function to install Kubernetes tools only
+install_kubernetes_tools() {
+    echo "Starting Kubernetes tools installation..."
 
     # Step 1: Install Kubernetes tools (kubectl, kubelet, kubeadm)
     sudo apt update
@@ -61,17 +116,12 @@ install_minikube() {
     # Step 3: Add the Kubernetes repository to your system
     sudo add-apt-repository "deb https://apt.kubernetes.io/ kubernetes-xenial main"
 
-    # Step 4: Install Minikube
-    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-    sudo install minikube /usr/local/bin/
-
-    # Step 5: Start Minikube cluster
-    minikube start --driver=docker
-
-    # Step 6: Verify Minikube installation
-    minikube status
-
-    echo "Minikube installation complete."
+    echo "Kubernetes tools installation complete..."
+    echo "Proceeding with next steps..."
+    echo "--------------------------------"
+    echo "--------------------------------"
+    sleep 5
+    check_minikube_installed
 }
 
 
@@ -79,11 +129,15 @@ install_minikube() {
 echo "Running package update & upgrade..."
 sudo apt-get update && sudo apt upgrade -y
 echo "Completed package update & upgrade..."
-chmod 755 ${SCRIPT} # Granting execution access to file
-echo "Script '$SCRIPT' is now executable."
+chmod 755 ${K8S_SCRIPT} # Granting execution access to file
+echo "Script '$K8S_SCRIPT' is now executable."
 echo "--------------------------------"
 echo "--------------------------------"
 sleep 5 # Pausing execution 2 for 5 seconds for clarity in second cycle.
 
-# Call the function to install Minikube
-install_minikube
+# K8s
+check_kubernetes_tools_installed
+echo "Task completed..."
+echo "--------------------------------"
+echo "--------------------------------"
+sleep 5

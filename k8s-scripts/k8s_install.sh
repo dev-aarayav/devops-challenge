@@ -40,3 +40,36 @@ else
     echo "Kubernetes v1.21 is not installed."
     # Provide instructions for upgrading or installing the correct version.
 fi
+
+# -----------------------------------------
+
+
+# Function to install Kubernetes & Minikube
+install_minikube() {
+    echo "Starting Minikube installation..."
+
+    # Check if Docker is installed
+    check_docker_installed
+
+    # Step 1: Install Kubernetes tools (kubectl, kubelet, kubeadm)
+    sudo apt update
+    sudo apt install kubectl kubelet kubeadm -y
+
+    # Step 2: Download and add the GPG key for Kubernetes
+    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+    # Step 3: Add the Kubernetes repository to your system
+    sudo add-apt-repository "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+
+    # Step 4: Install Minikube
+    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    sudo install minikube /usr/local/bin/
+
+    # Step 5: Start Minikube cluster
+    minikube start --driver=docker
+
+    # Step 6: Verify Minikube installation
+    minikube status
+
+    echo "Minikube installation complete."
+}

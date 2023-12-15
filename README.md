@@ -9,6 +9,7 @@
 - Instructions
     - Clone the project locally in Ubuntu machine.
     - Open folder "docker-scripts" and use script ```nginx_setup.sh```
+    - Grant execution access to script: ```$ chmod +x nginx_setup.sh```
     - Execution command for the script: ```$ ./nginx_setup.sh nginx```
     - Run the following command and check if the Docker container is running: ```$ docker ps```
      * NOTE: It should display an output like below:
