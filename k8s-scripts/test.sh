@@ -1,6 +1,12 @@
 #!/bin/bash
 
 K8S_SCRIPT="$0"
+CMD_MK=$(minikube version)
+CMD_KCTL=$(kubectl version --short)
+CMD_KLET=$(kubelet --version)
+CMD_KADM=$(kubeadm version)
+
+
 
 # Function to install Docker
 docker_inst() {
@@ -55,6 +61,7 @@ check_minikube_installed() {
         install_minikube
     else
         echo "Minikube is already installed..."
+        echo "Minikube current version '${CMD_MK}'"
         echo "Proceeding with next steps..."
         echo "--------------------------------"
         echo "--------------------------------"
@@ -88,12 +95,16 @@ install_minikube() {
 
 # Function to check if Kubernetes tools are installed
 check_kubernetes_tools_installed() {
-    if ! command -v kubectl &>/dev/null || ! command -v kubelet &>/dev/null || ! command -v kubeadm &>/dev/null; then
+    if ! command -v kubectl &>/dev/null || ! command -v kubelet &>/dev/null || ! command -v kubeadm &>/dev/null
+    then
         echo "Kubernetes tools are not installed. Proceeding with installation..."
         # Call the function to install Kubernetes tools
         install_kubernetes_tools
     else
         echo "Kubernetes tools are already installed..."
+        echo "K8s kubctl current version '${CMD_KCTL}'"
+        echo "K8s kubelet current version '${CMD_KLET}'"
+        echo "K8s kubeadm current version '${CMD_KADM}'"
         echo "Proceeding with next steps..."
         echo "--------------------------------"
         echo "--------------------------------"
@@ -108,7 +119,8 @@ install_kubernetes_tools() {
 
     # Step 1: Install Kubernetes tools (kubectl, kubelet, kubeadm)
     sudo apt update
-    sudo apt install kubectl kubelet kubeadm -y
+    # sudo apt install kubectl kubelet kubeadm -y
+    sudo apt-get install -y kubectl=1.27.0-00 kubelet=1.27.0-00 kubeadm=1.27.0-00
 
     # Step 2: Download and add the GPG key for Kubernetes
     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
@@ -141,3 +153,7 @@ echo "Task completed..."
 echo "--------------------------------"
 echo "--------------------------------"
 sleep 5
+
+# Initiate Minikube cluster
+# minikube delete
+# minikube start --kubernetes-version=v1.27.0
