@@ -14,7 +14,7 @@
     - Execution command for the script: ```$ ./nginx_setup.sh nginx```
     - Run the following command and check if the Docker container is running: ```$ docker ps```
      * NOTE: It should display an output like below:
-     ![Dcoker ps output](image.png)
+     ![Docker ps output](image.png)
     - Open a web browser and access http://localhost:8000 to see Nginx index web page running.
      * NOTE: It should display the following text in browser:
     ![Nginx Browser Output](image-3.png)
