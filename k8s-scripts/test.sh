@@ -55,7 +55,7 @@ check_docker_installed() {
 check_minikube_installed() {
     if ! command -v minikube &>/dev/null 
     then
-        echo "Minikube is not installed. Proceeding with installation..."
+        echo "Minikube is not installed..."
         # Call the function to install Minikube
         install_minikube
     else
@@ -70,33 +70,43 @@ check_minikube_installed() {
 
 # Function to install Minikube
 install_minikube() {
-    echo "Starting Minikube installation..."
+    read -p "This will start with Docker install Verification/Installation. Do you want to proceed? (yes/no): " choice
+    case "$choice" in
+        yes|YES|y|Y )
+            echo "Starting Docker Verification..."
 
-    # Check if Docker is installed
-    check_docker_installed
+            # Check if Docker is installed
+            check_docker_installed
 
-    # Step 1: Download and install Minikube
-    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-    sudo install minikube /usr/local/bin/
+            echo "Starting Minikube Installation..."
 
-    # Step 2: Start Minikube cluster
-    minikube start --driver=docker
+            # Step 1: Download and install Minikube
+            curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+            sudo install minikube /usr/local/bin/
 
-    # Step 3: Verify Minikube installation
-    minikube status
+            # Step 2: Start Minikube cluster
+            minikube start --driver=docker
 
-    echo "Minikube installation complete."
-    echo "--------------------------------"
-    echo "--------------------------------"
-    sleep 5
+            # Step 3: Verify Minikube installation
+            minikube status
+
+            echo "Minikube installation complete."
+            echo "--------------------------------"
+            echo "--------------------------------"
+            sleep 5 ;;
+        * ) 
+        echo "Aborting removal process." ;;
+        esac
 }
 
 
 # Function to check if Kubernetes tools are installed
 check_kubernetes_tools_installed() {
+
     if ! command -v kubectl &>/dev/null || ! command -v kubelet &>/dev/null || ! command -v kubeadm &>/dev/null
     then
-        echo "Kubernetes tools are not installed. Proceeding with installation..."
+        echo "Kubernetes tools are not installed..."
+
         # Call the function to install Kubernetes tools
         install_kubernetes_tools
     else
@@ -114,25 +124,34 @@ check_kubernetes_tools_installed() {
 
 # Function to install Kubernetes tools only
 install_kubernetes_tools() {
-    echo "Starting Kubernetes tools installation..."
+    
+    # Confirm action before installation
+    read -p "This will start Kubernetes tools installation, want to proceed? (yes/no): " choice
+    case "$choice" in
+    yes|YES|y|Y )
+        echo "Starting Kubernetes tools installation..."
 
-    # Step 1: Install Kubernetes tools (kubectl, kubelet, kubeadm)
-    sudo apt update
-    # sudo apt install kubectl kubelet kubeadm -y
-    sudo apt-get install -y kubectl=1.27.0-00 kubelet=1.27.0-00 kubeadm=1.27.0-00
+        # Step 1: Install Kubernetes tools (kubectl, kubelet, kubeadm)
+        # sudo apt update
+        
+        # sudo apt install kubectl kubelet kubeadm -y
+        sudo apt-get install -y kubectl=1.27.0-00 kubelet=1.27.0-00 kubeadm=1.27.0-00
 
-    # Step 2: Download and add the GPG key for Kubernetes
-    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+        # Step 2: Download and add the GPG key for Kubernetes
+        curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 
-    # Step 3: Add the Kubernetes repository to your system
-    sudo add-apt-repository "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+        # Step 3: Add the Kubernetes repository to your system
+        sudo add-apt-repository "deb https://apt.kubernetes.io/ kubernetes-xenial main"
 
-    echo "Kubernetes tools installation complete..."
-    echo "Proceeding with next steps..."
-    echo "--------------------------------"
-    echo "--------------------------------"
-    sleep 5
-    check_minikube_installed
+        echo "Kubernetes tools installation complete..."
+        echo "Proceeding with next steps..."
+        echo "--------------------------------"
+        echo "--------------------------------"
+        sleep 5
+        check_minikube_installed ;;
+    * ) 
+        echo "Aborting installation process..." ;;
+    esac
 }
 
 
@@ -146,7 +165,7 @@ echo "--------------------------------"
 echo "--------------------------------"
 sleep 5 # Pausing execution 2 for 5 seconds for clarity in second cycle.
 
-# K8s
+# Call of Kubernetes Verification function of tools installed
 check_kubernetes_tools_installed
 echo "Task completed..."
 echo "--------------------------------"
@@ -155,4 +174,3 @@ sleep 5
 
 # ------------------------------------------------------------------------
 # FUNCTIONALITY
-

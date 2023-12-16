@@ -8,7 +8,6 @@ then
 fi
 
 # VARIABLES
-                                                                                                       # HARBOR_NAMESPACE="$4" # example `harbor`, `project-harbor`
 HARBOR_REGISTRY="localhost:5000"
 PROJECT_NAME="aarayav-project"
 TAG="v1"
@@ -102,26 +101,30 @@ sleep 5 # Stop here to understand better functionality.
 # Add Harbor Helm repository & installation of Harbor chart from Helm Hub
 echo "Starting download and installation of Harbor..."
 helm repo add harbor https://helm.goharbor.io
-helm install harbor harbor/harbor                                                                     #--namespace "$HARBOR_NAMESPACE" # helm install <release-name> <chart-version>
-echo "Harbor deployment completed in the namespace: $HARBOR_NAMESPACE."
+helm install harbor harbor/harbor
+echo "Harbor deployment completed..."
 echo "-------------------------------"
 echo "-------------------------------"
 sleep 5 # Stop here to understand better functionality.
-# EXTRA use helm show values harbor/harbor to see deault values
 
-# Wait for Harbor deployment to be ready
 echo "Waiting for Harbor deployment to be ready..."
 while true; do
-    READY_PODS=$(kubectl get pods -n "$HARBOR_NAMESPACE" | grep -E "harbor-.*\s+([1-9][0-9]*)(\/)([1-9][0-9]*)(\s+)(Running|Completed|Succeeded)" | wc -l)
-    TOTAL_PODS=$(kubectl get pods -n "$HARBOR_NAMESPACE" | grep -E "harbor-" | wc -l)
+    RUNNING_PODS=$(kubectl get pods -n <namespace> --selector=app=harbor --field-selector=status.phase=Running | grep -c Running)
+    TOTAL_PODS=$(kubectl get pods -n <namespace> --selector=app=harbor | grep -c Running)
 
-    if [ "$READY_PODS" -eq "$TOTAL_PODS" ]; then
+    # Testing Purposes
+    echo "READY_PODS: $READY_PODS"
+    echo "TOTAL_PODS: $TOTAL_PODS"
+
+
+    if [ "$RUNNING_PODS" -eq "$TOTAL_PODS" ]; then
         break
     fi
 
-    sleep 5 # Stop here to understand better functionality.
+    sleep 5
 done
 
+echo "All pods from Harbor namespace are running..."
 echo "Harbor deployment is ready!"
 
 # Call of the function to build, upload or pull docker image into Harbor registry.
