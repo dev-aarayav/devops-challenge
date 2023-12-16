@@ -36,15 +36,13 @@
         3. ```rm_k8s```: OPTIONAL, if the installation goes wrong for any reason, this script removes K8s and minikube.
     - Grant execution access to each script: ```$ chmod +x ./name-of-script```
     - Execution command for the first script: ```$ ./minikue_k8s_setup.sh```
-    - Execution command for the second script: ```$ ./harbor-k8s-deployment.sh <docker-image-path> <image-name> <project-name> <app-namespace>```
+    - Execution command for the second script: ```$ ./harbor-k8s-deployment.sh <docker-image-path> <image-name> <project-name>```
         1. ```<docker-image-path>```: You have to define a path where the docker image will be available.
         2. ```<image-name>```: Here is where you define the name of the docker image for building and Harbor purposes.
         3. ```<project-name>```: For Harbor registry you have to specify a directory (project-name) where each project (docker image) will be stored.
-        4. ```<app-namespace>```: 
-        5. NOTE: This call will build the Docker image from the specified directory, tag it with the image custom name, create a custom directory name inside of Harbor and define a custom namespace for Harbor deployment into K8s. 
+        4. NOTE: This call will build the Docker image from the specified directory, tag it with the image custom name, create a custom directory name inside of Harbor and define a custom namespace for Harbor deployment into K8s. 
             - If you omit the second parameter, it will default to "harbor-image". 
             - If you omit the third parameter, it will default to "aarayav-project".
-            - 
     - After executing the script, follow the steps below to confirm that everything is running:
         1. ```minikube status```: Use this commad to double check that `host`, `kubelet` and `apiserver` appear as `Running`:
         ![Minikube status](image-1.png)
