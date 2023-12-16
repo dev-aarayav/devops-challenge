@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Check if the namespace argument is provided
-if [ -z "$4" ]
+if [ -z "$1" ]
 then
-    echo "Please provide the namespace for Harbor deployment as the fourth argument."
+    echo "Please provide the required for argument to run script. Please refer to README file"
     exit 1
 fi
 
 # VARIABLES
-HARBOR_NAMESPACE="$4" # example `harbor`, `project-harbor`
+                                                                                                       # HARBOR_NAMESPACE="$4" # example `harbor`, `project-harbor`
 HARBOR_REGISTRY="localhost:5000"
 PROJECT_NAME="aarayav-project"
 TAG="v1"
@@ -102,7 +102,7 @@ sleep 5 # Stop here to understand better functionality.
 # Add Harbor Helm repository & installation of Harbor chart from Helm Hub
 echo "Starting download and installation of Harbor..."
 helm repo add harbor https://helm.goharbor.io
-helm install harbor harbor/harbor --namespace "$HARBOR_NAMESPACE" # helm install <release-name> <chart-version>
+helm install harbor harbor/harbor                                                                     #--namespace "$HARBOR_NAMESPACE" # helm install <release-name> <chart-version>
 echo "Harbor deployment completed in the namespace: $HARBOR_NAMESPACE."
 echo "-------------------------------"
 echo "-------------------------------"
