@@ -144,7 +144,7 @@ sleep 5 # Stop here to understand better functionality.
 # Add Harbor Helm repository into local Helm setup
 echo "Adding Harbor to local Helm setup..."
 helm repo add harbor https://helm.goharbor.io
-slep 3
+sleep 3
 
 # Harbor chart installation with Helm
 helm install harbor harbor/harbor --namespace=$cluster_namespace
@@ -161,7 +161,7 @@ echo "-------------------------------"
 sleep 5 # Stop to understand process
 
 
-echo "Starting with Harbor pods validation..."
+echo "Starting Harbor pods validation..."
 
 # Valdiation of Harbor pods running in K8s cluster...
 while true
