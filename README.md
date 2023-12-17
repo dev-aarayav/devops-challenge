@@ -9,8 +9,9 @@
     - Install a Text editor, in this case is recommended Visual Studio Code. Follow [official docs](https://code.visualstudio.com/docs/setup/windows)
 
 - Instructions
-    - Clone the project locally in Ubuntu machine.
+    - Clone the project locally in Ubuntu machine with Git command: ```git clone https://github.com/dev-aarayav/devops-challenge.git```
     - Open folder "docker-scripts" and use script ```nginx_setup.sh```
+    - Run the following command before starting script: ```sudo apt-get update && sudo apt upgrade -y```
     - Grant execution access to script: ```$ chmod +x nginx_setup.sh```
     - Execution command for the script: ```$ ./nginx_setup.sh nginx```
     - Run the following command and check if the Docker container is running: ```$ docker ps```
@@ -34,6 +35,7 @@
         1. ```minikue_k8s_setup.sh```: This script is to proceed with the installation of Kubernetes tools & Minikube.
         2. ```harbor-k8s-deployment.sh```: This script is to proceed with Harbor deployment in K8s cluster and upload/download of Docker images in Harbor registry.
         3. ```rm_k8s```: OPTIONAL, if the installation goes wrong for any reason, this script removes K8s and minikube.
+    - Run the following command before starting script: ```sudo apt-get update && sudo apt upgrade -y```
     - Grant execution access to each script: ```$ chmod +x ./name-of-script```
     - Execution command for the first script: ```$ ./minikue_k8s_setup.sh```
     - Execution command for the second script: ```$ ./harbor-k8s-deployment.sh <docker-image-path> <image-name> <project-name>```
