@@ -10,60 +10,63 @@ HTML_CONTENT="<html>
 <body>
   <h1>Welcome to NGINX Server!</h1>
   <p>This is a simple HTML content in a Bash variable.</p>
+  <p>By Alexander Araya Vega</p>
 </body>
 </html>"
 
 
-# ---------------------------------------------------
+# ---------------- FUNCTIONS
 
 # Function to install Docker
-docker_inst() {
+docker_setup() {
     echo "Starting Docker installation..."
-    sudo apt-get update # Update package lists
-    sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common # Install prerequisites
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - # Add Docker GPG key
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" # Add Docker repository
-    sudo apt-get update # Update package lists
-    sudo apt-get install -y docker-ce # Install Docker CE
-    docker --version # Check Docker version
-    sudo docker run hello-world # Verify that the Docker Engine installation is successful by running the "hello-world" image
+
+    # Check if Docker is already installed
+    if command -v docker &>/dev/null; then
+        echo "Docker is already installed."
+        echo "Proceeding with next steps..."
+        echo "--------------------------------"
+        echo "--------------------------------"
+        sleep 5
+        # Add other steps or function calls here if needed
+        return
+    fi
+
+    # Install necessary dependencies
+    sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+
+    # Fetch Docker's official GPG key and add it to the system keychain for package verification
+    if ! curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -; then
+        echo "Failed to add Docker's GPG key. Exiting."
+        exit 1
+    fi
+
+    # Add the Docker repository to the system's sources
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+    # Install Docker Community Edition
+    if ! sudo apt-get install -y docker-ce; then
+        echo "Failed to install Docker Community Edition. Exiting."
+        exit 1
+    fi
+
+    # Check the installed Docker version
+    if ! docker --version; then
+        echo "Failed to verify Docker installation. Exiting."
+        exit 1
+    fi
+
+    # Test Docker installation by running a simple containerized application
+    if ! sudo docker run hello-world; then
+        echo "Failed to run hello-world container. Exiting."
+        exit 1
+    fi
+
     echo "Docker installation completed..."
     echo "--------------------------------"
     echo "--------------------------------"
 }
 
-
-# Function to check if Docker is installed
-check_docker_installed() {
-    if ! command -v docker &>/dev/null
-    then
-        echo "Docker is not installed. Proceeding with installation..."
-        # Call the function to install Docker
-        docker_inst
-
-        # Verification step after installation
-        if ! command -v docker &>/dev/null; then
-            echo "Docker installation failed. Please install Docker manually..."
-            exit 1
-        else
-            echo "Docker installed successfully!"
-            echo "Proceeding with next steps..."
-            echo "--------------------------------"
-            echo "--------------------------------"
-            sleep 5 # Pausing execution for 5 seconds for clarity of this first cycle.
-        fi
-    else
-        echo "Docker is already installed..."
-        echo "Proceeding with next steps..."
-        echo "--------------------------------"
-        echo "--------------------------------"
-        sleep 5 # Pausing execution for 5 seconds for clarity of this first cycle.
-    fi
-    
-}
-
-# Check if Docker is installed
-check_docker_installed
 
 # Function to check if Docker Nginx image exists & setup of Nginx Docker container.
 nginx_setup(){
@@ -98,15 +101,10 @@ nginx_setup(){
     fi
 }
 
-# Previos steps to run safely
-echo "Running package update & upgrade..."
-sudo apt-get update && sudo apt upgrade -y
-echo "Completed package update & upgrade..."
-chmod 755 ${DOCKER_SCRIPT} # Granting execution access to file
-echo "DOCKER_SCRIPT '$DOCKER_SCRIPT' is now executable."
-echo "--------------------------------"
-echo "--------------------------------"
-sleep 5 # Pausing execution 2 for 5 seconds for clarity in second cycle.
+# ---------------- LOGIC
+
+# Call function for docker setup
+docker_setup
 
 # Verification of directory existance
 if [ -e "$HOST_PATH" ]
