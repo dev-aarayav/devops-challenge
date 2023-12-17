@@ -9,7 +9,6 @@
 - Reset K8s Namespace: ```kubectl delete namespace <namespace-name>```
 
 
-
 - Stop Minikube: ```minikube stop  ```
 - Delete Minikube: ```minikube delete```
 - List Docker images: ```docker images```
@@ -58,4 +57,4 @@ Each of these pods represents a different component or service within the Harbor
 
 
 
-# ./test2.sh /home/aarayav/root/devops-challenge/k8s-scripts/py_app/ py-image py-project
+# ./test2.sh /home/aarayav/root/devops-challenge/k8s-scripts/nginx_server/ nginx-image nginx-project

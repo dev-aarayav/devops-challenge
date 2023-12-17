@@ -14,7 +14,7 @@ uninstall_minikube() {
 # Function to uninstall Kubernetes tools
 uninstall_kubernetes_tools() {
     echo "Uninstalling Kubernetes tools..."
-    sudo apt-get remove kubectl kubelet kubeadm -y
+    sudo apt-get remove kubectl kubelet kubeadm kubernetes-cni -y
     echo "Kubernetes tools have been uninstalled."
     echo "--------------------------------"
 }

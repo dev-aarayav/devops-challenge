@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Error: INSTALLATION FAILED: execution error at (harbor/templates/nginx/secret.yaml:3:12): The "expose.tls.auto.commonName" is required!
+
 # This validation checks if the number of arguments ($#) passed to the script is less than 3.
 if [ $# -lt 3 ]
 then
@@ -12,7 +14,7 @@ fi
 DOCKER_DIR=$1 # First argument assigned
 IMAGE_NAME=$2 # Second argument assigned
 PROJECT_NAME=$3 # Third argument assigned
-K8S_NAMESPACE="harbor" #Name
+cluster_namespace="harbor" #Name
 HARBOR_REGISTRY="localhost:5000" 
 TAG="v1"
 
@@ -121,7 +123,6 @@ done
 echo "Validation completed..."
 echo "-------------------------------"
 echo "-------------------------------"
-sleep 5 # Stop to understand process
 echo "Minikube is ready!"
 sleep 5 # Stop to understand process
 
@@ -133,7 +134,7 @@ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scr
 # Helm Installation
 echo "Installing Helm..."
 chmod 700 get_helm.sh
-./get_helm.sh
+./get_helm.sh # Execute script
 
 # Completion messages
 echo "Helm installation completed..."
@@ -147,7 +148,7 @@ helm repo add harbor https://helm.goharbor.io
 sleep 3
 
 # Harbor chart installation with Helm
-helm install harbor harbor/harbor --namespace=$cluster_namespace
+helm install harbor harbor/harbor --namespace=$cluster_namespace --create-namespace --wait --set expose.type=nodePort
 echo "Checking if namespace '$cluster_namespace' exists in the Minikube cluster..."
 
 

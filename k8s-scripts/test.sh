@@ -1,176 +1,180 @@
 #!/bin/bash
 
-K8S_SCRIPT="$0"
-CMD_MK=$(minikube version)
-CMD_KCTL=$(kubectl version --short)
-CMD_KLET=$(kubelet --version)
-CMD_KADM=$(kubeadm version)
+# errores
+# ./test.sh: line 174: unexpected EOF while looking for matching `"'
+# ./test.sh: line 179: syntax error: unexpected end of file
 
+# ---------------- FUNCTIONS
 
 # Function to install Docker
-docker_inst() {
+docker_setup() {
     echo "Starting Docker installation..."
-    sudo apt-get update
+
+    # Check if Docker is already installed
+    if command -v docker &>/dev/null; then
+        echo "Docker is already installed."
+        echo "Proceeding with next steps..."
+        echo "--------------------------------"
+        echo "--------------------------------"
+        sleep 5
+        # Add other steps or function calls here if needed
+        return
+    fi
+
+    # Install necessary dependencies
     sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+    # Fetch Docker's official GPG key and add it to the system keychain for package verification
+    if ! curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -; then
+        echo "Failed to add Docker's GPG key. Exiting."
+        exit 1
+    fi
+
+    # Add the Docker repository to the system's sources
     sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    sudo apt-get update
-    sudo apt-get install -y docker-ce
-    docker --version
-    sudo docker run hello-world
+
+    # Install Docker Community Edition
+    if ! sudo apt-get install -y docker-ce; then
+        echo "Failed to install Docker Community Edition. Exiting."
+        exit 1
+    fi
+
+    # Check the installed Docker version
+    if ! docker --version; then
+        echo "Failed to verify Docker installation. Exiting."
+        exit 1
+    fi
+
+    # Test Docker installation by running a simple containerized application
+    if ! sudo docker run hello-world; then
+        echo "Failed to run hello-world container. Exiting."
+        exit 1
+    fi
+
     echo "Docker installation completed..."
     echo "--------------------------------"
     echo "--------------------------------"
 }
 
-# Function to check if Docker is installed
-check_docker_installed() {
-    if ! command -v docker &>/dev/null
-    then
-        echo "Docker is not installed. Proceeding with installation..."
-        # Call the function to install Docker
-        docker_inst
 
-        # Verification step after installation
-        if ! command -v docker &>/dev/null; then
-            echo "Docker installation failed. Please install Docker manually..."
-            exit 1
-        else
-            echo "Docker installed successfully!"
-            echo "Proceeding with next steps..."
-            echo "--------------------------------"
-            echo "--------------------------------"
-            sleep 5
-        fi
-    else
-        echo "Docker is already installed..."
-        echo "Proceeding with next steps..."
-        echo "--------------------------------"
-        echo "--------------------------------"
-        sleep 5
-    fi
+# Function to install Minikube
+install_minikube() {
+
+    echo "Starting Docker Verification..."
+
+    # Check if Docker is installed
+    docker_setup
+
+    echo "Starting Minikube Installation..."
+
+    # Step 1: Download and install Minikube
+    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    sudo install minikube /usr/local/bin/
+
+    # Step 2: Start Minikube cluster
+    minikube start --driver=docker
+
+    # Step 3: Verify Minikube installation
+    minikube status
+
+    echo "Minikube installation complete."
+    echo "--------------------------------"
+    echo "--------------------------------"
+    sleep 5
 }
 
 # Function to check if Minikube is installed
 check_minikube_installed() {
-    if ! command -v minikube &>/dev/null 
+    if ! command -v minikube &>/dev/null
     then
         echo "Minikube is not installed..."
-        # Call the function to install Minikube
+
+        # Call the function install Minikube
         install_minikube
     else
         echo "Minikube is already installed..."
-        echo "Minikube current version '${CMD_MK}'"
+        echo "Minikube current version: $(minikube version)"
         echo "Proceeding with next steps..."
         echo "--------------------------------"
         echo "--------------------------------"
         sleep 5
-    fi
-}
-
-# Function to install Minikube
-install_minikube() {
-    read -p "This will start with Docker install Verification/Installation. Do you want to proceed? (yes/no): " choice
-    case "$choice" in
-        yes|YES|y|Y )
-            echo "Starting Docker Verification..."
-
-            # Check if Docker is installed
-            check_docker_installed
-
-            echo "Starting Minikube Installation..."
-
-            # Step 1: Download and install Minikube
-            curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-            sudo install minikube /usr/local/bin/
-
-            # Step 2: Start Minikube cluster
-            minikube start --driver=docker
-
-            # Step 3: Verify Minikube installation
-            minikube status
-
-            echo "Minikube installation complete."
-            echo "--------------------------------"
-            echo "--------------------------------"
-            sleep 5 ;;
-        * ) 
-        echo "Aborting removal process." ;;
-        esac
-}
-
-
-# Function to check if Kubernetes tools are installed
-check_kubernetes_tools_installed() {
-
-    if ! command -v kubectl &>/dev/null || ! command -v kubelet &>/dev/null || ! command -v kubeadm &>/dev/null
-    then
-        echo "Kubernetes tools are not installed..."
-
-        # Call the function to install Kubernetes tools
-        install_kubernetes_tools
-    else
-        echo "Kubernetes tools are already installed..."
-        echo "K8s kubctl current version '${CMD_KCTL}'"
-        echo "K8s kubelet current version '${CMD_KLET}'"
-        echo "K8s kubeadm current version '${CMD_KADM}'"
-        echo "Proceeding with next steps..."
-        echo "--------------------------------"
-        echo "--------------------------------"
-        sleep 5
-        check_minikube_installed
+        # Check other steps or call other functions here if needed
     fi
 }
 
 # Function to install Kubernetes tools only
 install_kubernetes_tools() {
-    
-    # Confirm action before installation
-    read -p "This will start Kubernetes tools installation, want to proceed? (yes/no): " choice
-    case "$choice" in
-    yes|YES|y|Y )
-        echo "Starting Kubernetes tools installation..."
 
-        # Step 1: Install Kubernetes tools (kubectl, kubelet, kubeadm)
-        # sudo apt update
+    echo "Starting Kubernetes tools installation..."
         
-        # sudo apt install kubectl kubelet kubeadm -y
-        sudo apt-get install -y kubectl=1.27.0-00 kubelet=1.27.0-00 kubeadm=1.27.0-00
+    # sudo apt install kubectl kubelet kubeadm -y
+    sudo apt-get install -y kubectl=1.27.0-00 kubelet=1.27.0-00 kubeadm=1.27.0-00
 
-        # Step 2: Download and add the GPG key for Kubernetes
-        curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+    # Step 2: Download and add the GPG key for Kubernetes
+    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 
-        # Step 3: Add the Kubernetes repository to your system
-        sudo add-apt-repository "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+    # Step 3: Add the Kubernetes repository to your system
+    sudo add-apt-repository "deb https://apt.kubernetes.io/ kubernetes-xenial main"
 
-        echo "Kubernetes tools installation complete..."
+    echo "Kubernetes tools installation complete..."
+    echo "Proceeding with next steps..."
+    echo "--------------------------------"
+    echo "--------------------------------"
+    sleep 5 # pause 
+
+    # Call of function to check minikube installed in host
+    check_minikube_installed
+}
+
+# Function to check if Kubernetes tools are installed
+check_kubernetes_tools_installed() {
+    local tools_missing=0
+
+    # Check if kubectl is installed
+    if ! command -v kubectl &>/dev/null
+    then
+        echo "kubectl is not installed."
+        tools_missing=1
+    fi
+
+    # Check if kubelet is installed
+    if ! command -v kubelet &>/dev/null
+    then
+        echo "kubelet is not installed."
+        tools_missing=1
+    fi
+
+    # Check if kubeadm is installed
+    if ! command -v kubeadm &>/dev/null
+    then
+        echo "kubeadm is not installed."
+        tools_missing=1
+    fi
+
+    # If any tool is missing, install all Kubernetes tools
+    if [ $tools_missing -eq 1 ]; then
+        install_kubernetes_tools
+    else
+        # If all tools are installed, proceed
+        echo "Kubernetes tools are already installed..."
+        echo "Kubectl current version: $(kubectl version --short | grep 'Client Version')"
+        echo "Kubelet current version: $(kubelet --version)"
+        echo "Kubeadm current version: $(kubeadm version -o short)"
         echo "Proceeding with next steps..."
         echo "--------------------------------"
         echo "--------------------------------"
-        sleep 5
-        check_minikube_installed ;;
-    * ) 
-        echo "Aborting installation process..." ;;
-    esac
+        sleep 5 # Pause for better understanding
+
+        # Call of Minikube verification function
+        check_minikube_installed
+    fi
 }
-
-
-# Previos steps to run safely
-echo "Running package update & upgrade..."
-sudo apt-get update && sudo apt upgrade -y
-echo "Completed package update & upgrade..."
-chmod 755 ${K8S_SCRIPT} # Granting execution access to file
-echo "Script '$K8S_SCRIPT' is now executable."
-echo "--------------------------------"
-echo "--------------------------------"
-sleep 5 # Pausing execution 2 for 5 seconds for clarity in second cycle.
 
 # Call of Kubernetes Verification function of tools installed
 check_kubernetes_tools_installed
+
+
 echo "Task completed..."
 echo "--------------------------------"
 echo "--------------------------------"
 sleep 5
-
-# ------------------------------------------------------------------------
-# FUNCTIONALITY
