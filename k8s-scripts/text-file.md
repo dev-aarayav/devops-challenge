@@ -7,10 +7,10 @@
 (ONLY IF IS NOT DEFAULT NAMESPACE)
 - Get K8s Namespaces: ```kubectl get namespaces```
 - Reset K8s Namespace: ```kubectl delete namespace <namespace-name>```
-- Delete all pods from Namespace: ```kubectl delete pods --all -n default```
-- Delete specific K8s resources: ```kubectl delete <resource_type> -l <label_selector> -n default```
 
-- Stop Minikube: ```minikube stop```
+
+
+- Stop Minikube: ```minikube stop  ```
 - Delete Minikube: ```minikube delete```
 - List Docker images: ```docker images```
 - Remove Docker Images: ```docker rmi <image-name>``
@@ -30,6 +30,14 @@
 2. ```helm show values harbor/harbor```:
     - Command used to display all the Harbor default values for configuration.
     - The output can be used as reference to create own ```values.yaml``` and create a Helm Chart.
+3. ```RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" $HARBOR_URL) # Validation```
+    - RESPONSE=: This part initializes the variable where the HTTP response code will be stored.
+    - ```$(...)```: This is command substitution in Bash. It allows the output of a command or expression to replace the command itself. In this case, it's wrapping the curl command.
+    - ```curl```: This is a command-line tool used for transferring data using various protocols. Here, it's used to perform an HTTP request.
+    - ```-s:``` This flag tells curl to work in silent mode, meaning it won't show progress or error messages.
+    - ```-o /dev/null```: This flag tells curl to write the output to /dev/null, a special file that discards all data written to it. Essentially, it's used here to suppress the output (like the response body) from being displayed.
+    - ```-w "%{http_code}"```: This flag tells curl to print the HTTP response code (%{http_code}) to standard output after the request is made. It specifies the format of the output to just the HTTP response code.
+    - ```$HARBOR_URL```: This variable holds the URL to which the curl command will send the HTTP request. It's the Harbor service URL constructed earlier.
 
 ### Namespaces available in Minikube cluster
 - default: This is the default namespace where resources are created if no other namespace is specified.

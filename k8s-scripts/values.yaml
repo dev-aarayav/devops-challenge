@@ -1,53 +1,37 @@
-ingress:
-  enabled: true
-  hosts:
-    core: harbor.domain.com
-  annotations: 
-    # Add any specific annotations for your Ingress controller
-  tls:
-    - secretName: harbor-tls
-      hosts:
-        - harbor.domain.com
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: harbor
+  labels:
+    app: harbor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: harbor
+  template:
+    metadata:
+      labels:
+        app: harbor
+    spec:
+      containers:
+        - name: harbor-container
+          image: goharbor/harbor-core:v2.3.2  # Replace with the desired Harbor version
+          ports:
+            - containerPort: 80  # Replace with the Harbor port if needed (e.g., 80, 443, etc.)
 
-externalURL: https://harbor.domain.com
+# This YAML defines a basic Deployment for Harbor:
 
-persistence:
-  enabled: true
-  storageClass: <storage-class-name>
-  size: 10Gi
-  annotations: {}
-  accessMode: ReadWriteOnce
-
-database:
-  type: internal
-  internal:
-    name: harbor-db
-    image: postgres:12.6
-    imageTag: "12.6"
-    ...
-
-registry:
-  storage:
-    secretName: registry-storage-secret
-    ...
-
-secret:
-  secretName: harbor-admin-secret
-
-notary:
-  enabled: true
-notifier:
-  enabled: true
-  smtp:
-    enabled: true
-    host: smtp.domain.com
-    port: 25
-    ...
-
-resources:
-  requests:
-    memory: 1Gi
-    cpu: 500m
-  limits:
-    memory: 2Gi
-    cpu: 1
+# apiVersion: Specifies the Kubernetes API version used in the YAML.
+# kind: Specifies the resource type, in this case, a Deployment.
+# metadata: Contains information about the resource, including the name and labels.
+# spec: Describes the desired state for the Deployment.
+# replicas: Specifies the number of desired replicas (instances) for the Harbor Deployment. Adjust this as needed.
+# selector: Defines how the Deployment selects which Pods to manage based on labels.
+# template: Describes the Pod specification.
+# metadata: Contains labels for the Pod.
+# spec: Defines the Pod's containers.
+# name: Specifies the name of the container.
+# image: Specifies the Harbor Docker image to use. Update the image tag (v2.3.2 in this example) to the version you want to deploy.
+# ports: Specifies the ports the container exposes. Adjust the containerPort to match the port Harbor listens on.
+# This is a basic example and might need additional configuration based on your specific Harbor deployment requirements (such as persistent volumes, secrets, environment variables, etc.). Adjustments may be needed based on the Harbor configuration you're working with.
