@@ -97,35 +97,6 @@ check_harbor_namespace() {
 # ------------- START OF SCRIPT
 
 
-# Initiate Minikube cluster
-echo "Initializing Minikube cluster..."
-# minikube delete
-minikube start --kubernetes-version=v1.27.0
-echo "-------------------------------"
-echo "-------------------------------"
-sleep 5 # Stop here to understand better functionality.
-
-# Wait for Minikube to be ready
-echo "Waiting for Minikube to be ready..."
-
-# While loop for validation
-while true
-do
-    STATUS=$(kubectl get nodes --no-headers | grep "Ready")
-
-    if [ -n "$STATUS" ]; then
-        echo "Still waiting for Minikube to be ready..."
-        break
-    fi
-
-done
-
-echo "Validation completed..."
-echo "-------------------------------"
-echo "-------------------------------"
-echo "Minikube is ready!"
-sleep 5 # Stop to understand process
-
 
 # Helm binary download
 echo "Downloading Helm binary..."

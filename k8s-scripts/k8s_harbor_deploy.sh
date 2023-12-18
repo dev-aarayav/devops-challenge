@@ -61,57 +61,55 @@ docker_setup() {
     sleep 5
 } # end of docker_setup() function
 
-# 02 Function to install and initialize Minikube
+# 02 Function to install and initialize Minikube cluster
 install_minikube() {
 
-    echo "Starting Minikube Installation process..."
+echo "Starting Minikube Installation process..."
 
-    # Check if Minikube is already installed
-    if command -v minikube &>/dev/null
-    then
+    local minikube_installed=$(command -v minikube &>/dev/null && echo "true" || echo "false")
+
+    if [ "$minikube_installed" = "true" ]; then
         echo "Minikube is already installed..."
         echo "Minikube current version: $(minikube version)"
-        echo "Proceeding with Minikube cluster initialization..."
+    else
+        echo "Minikube is not yet installed..."
+        echo "Downloading and installing Minikube..."
 
-            # Start Minikube cluster
-        if ! minikube start --driver=docker # If command fails, then exit 1
-        then
-            echo "Failed to start Minikube cluster. Exiting script..."
-            exit 1
-        fi
-
-        echo "--------------------------------"
-        echo "--------------------------------"
-        sleep 5
-        # Add other steps or function calls here if needed
-        return
+        # Step 1: Download and install Minikube
+        sudo curl -Lo /usr/local/bin/minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        sudo chmod +x /usr/local/bin/minikube
     fi
-
-    echo "Minikube is not yet installed..."
-    echo "Downloading and installing Minikube..."
-
-    # Step 1: Download and install Minikube
-    sudo curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-    sudo install minikube /usr/local/bin/
 
     # Step 2: Start Minikube cluster
-    if ! minikube start --driver=docker # If command fails, then exit 1
+    echo "Starting Minikube cluster..."
+    if ! minikube start --kubernetes-version=v1.27.0 --driver=docker
     then
-        echo "Failed to start Minikube cluster. Exiting."
+        echo "Failed to start Minikube cluster. Exiting scritpt..."
         exit 1
     fi
 
-    # Step 3: Verify Minikube installation
-    if ! minikube status
-    then
-        echo "Failed to verify Minikube installation. Exiting."
-        exit 1
-    fi
+    # Function to validate Minikube cluster readiness
+    validate_minikube_cluster() {
+        echo "Validating Minikube cluster..."
+        while true
+        do
+            STATUS=$(kubectl get nodes --no-headers | grep "Ready")
+            if [ -n "$STATUS" ]
+            then
+                echo "Minikube nodes are ready:"
+                kubectl get nodes
+                break
+            else
+                echo "Still waiting for Minikube to be ready..."
+                sleep 5  # Adjust the sleep duration as needed
+            fi
+        done
+    }
 
-    echo "Minikube installation complete."
-    echo "--------------------------------"
-    echo "--------------------------------"
-    sleep 5
+    # re-call function "validate_minikube_cluster"
+    validate_minikube_cluster
+    echo "Minikube initialized correctly..."
+
 }
 
 # 03 Function to install Kubernetes tools only
@@ -153,6 +151,7 @@ k8s_tools_validation() {
         tools_missing=1
     else
         echo "Kubectl current version: $(kubectl version --client=true --short | grep 'Client Version')"
+    fi
 
     # Check if kubelet is installed and get version
     if ! command -v kubelet &>/dev/null
@@ -188,6 +187,44 @@ k8s_tools_validation() {
     fi
 }
 
+# 05 Function to validate existance of Helm or Helm installation:
+install_helm() {
+    echo "Starting Helm installation..."
+
+    local helm_installed=$(command -v helm &>/dev/null && echo "true" || echo "false")
+
+    if [ "$helm_installed" = "true" ]
+    then
+        echo "Helm is already installed..."
+        echo "Helm version: $(helm version --short)"
+    else
+        echo "Downloading Helm binary..."
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+
+        echo "Installing Helm..."
+        chmod 700 get_helm.sh
+        ./get_helm.sh
+
+        if [ $? -ne 0 ]; then
+            echo "Failed to install Helm. Exiting."
+            exit 1
+        fi
+    fi
+
+    # Verify Helm installation
+    if ! helm version &>/dev/null
+    then
+        echo "Failed to verify Helm installation. Exiting script..."
+        exit 1
+    fi
+
+    echo "Helm installation completed..."
+    echo "-------------------------------"
+    echo "-------------------------------"
+    sleep 5
+}
+
+
 # ---------------- START OF SCRIPT
 
 echo "Initializing K8s/Minikube script process..."
@@ -201,6 +238,17 @@ install_minikube
 # Step 0: Call function 03 to validate if K8s tools are installed if not exit 1:
 k8s_tools_validation
 
+# Resoponse related Minikube setup finished correclty.
+echo "Minikube ready..."
+echo "--------------------------------"
+echo "--------------------------------"
+sleep 5
+
+# Step 0: Call function 05 to install Helm
+install_helm
+
+
+# Finish script
 echo "Task completed..."
 echo "--------------------------------"
 echo "--------------------------------"
