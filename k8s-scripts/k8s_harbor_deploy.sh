@@ -82,6 +82,7 @@ echo "Starting Minikube Installation process..."
 
     # Step 2: Start Minikube cluster
     echo "Starting Minikube cluster..."
+    minikube delete # Necessary to avoid initializing K8s cluster with desired version.
     if ! minikube start --kubernetes-version=v1.27.0 --driver=docker
     then
         echo "Failed to start Minikube cluster. Exiting scritpt..."
@@ -106,7 +107,7 @@ echo "Starting Minikube Installation process..."
         done
     }
 
-    # re-call function "validate_minikube_cluster"
+    # Call function "validate_minikube_cluster"
     validate_minikube_cluster
     echo "Minikube initialized correctly..."
 
@@ -191,8 +192,10 @@ k8s_tools_validation() {
 install_helm() {
     echo "Starting Helm installation..."
 
+    # Contain a string "true" if Helm installed and accesible, otherwise "false" if not found
     local helm_installed=$(command -v helm &>/dev/null && echo "true" || echo "false")
 
+    # Verification of Helm installation.
     if [ "$helm_installed" = "true" ]
     then
         echo "Helm is already installed..."
@@ -201,17 +204,19 @@ install_helm() {
         echo "Downloading Helm binary..."
         curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 
-        echo "Installing Helm..."
+        echo "Running Helm installation script..."
         chmod 700 get_helm.sh
-        ./get_helm.sh
+        ./get_helm.sh # script
 
-        if [ $? -ne 0 ]; then
-            echo "Failed to install Helm. Exiting."
+        # Validate if exit status of script not equal to cero
+        if [ $? -ne 0 ]
+        then
+            echo "Failed to install Helm. Exiting script..."
             exit 1
         fi
     fi
 
-    # Verify Helm installation
+    # Verify Helm version after installation.
     if ! helm version &>/dev/null
     then
         echo "Failed to verify Helm installation. Exiting script..."
