@@ -61,7 +61,7 @@ docker_setup() {
     sleep 5
 } # end of docker_setup() function
 
-# Function to install and initialize Minikube
+# 02 Function to install and initialize Minikube
 install_minikube() {
 
     echo "Starting Minikube Installation process..."
@@ -114,7 +114,7 @@ install_minikube() {
     sleep 5
 }
 
-# Function to install Kubernetes tools only
+# 03 Function to install Kubernetes tools only
 k8s_tools_install() {
     echo "Starting Kubernetes tools installation..."
 
@@ -142,7 +142,7 @@ k8s_tools_install() {
     sleep 5 # pause 
 }
 
-# Function to check if Kubernetes tools are installed
+# 04 Function to check if Kubernetes tools are installed
 k8s_tools_validation() {
     local tools_missing=0
 
@@ -152,8 +152,7 @@ k8s_tools_validation() {
         echo "kubectl is not installed."
         tools_missing=1
     else
-        echo "Kubectl current version: $(kubectl version --client=true | grep 'Client Version')"
-    fi
+        echo "Kubectl current version: $(kubectl version --client=true --short | grep 'Client Version')"
 
     # Check if kubelet is installed and get version
     if ! command -v kubelet &>/dev/null
@@ -177,7 +176,7 @@ k8s_tools_validation() {
     if [ $tools_missing -eq 1 ]
     then
         echo "Attempting to install Kubernetes tools..."
-        k8s_tools_install # Call function to install Kuberentes tools
+        k8s_tools_install # Call function 04 to install Kuberentes tools
         k8s_tools_validation # Recheck after attempted installation
     else
         # If all tools are installed, proceed
@@ -193,13 +192,13 @@ k8s_tools_validation() {
 
 echo "Initializing K8s/Minikube script process..."
 
-# Step 0: Call function to verify Docker installation.
+# Step 0: Call function 01 to verify Docker installation.
 docker_setup
 
-# Step 0: Call function to install Minikube and if Docker engine is installed:
+# Step 0: Call function 02 to install Minikube and if Docker engine is installed:
 install_minikube
 
-# Step 0: Call function to validate if K8s tools are installed if not exit 1:
+# Step 0: Call function 03 to validate if K8s tools are installed if not exit 1:
 k8s_tools_validation
 
 echo "Task completed..."

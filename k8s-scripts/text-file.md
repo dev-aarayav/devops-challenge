@@ -4,14 +4,13 @@
 - List all Helm releases across all namespaces (-A flag): ```helm list -A```
 - Remove Helm Release (Harbor deployment): ```helm uninstall <release-name>```
 
-(ONLY IF IS NOT DEFAULT NAMESPACE)
-- Get K8s Namespaces: ```kubectl get namespaces```
-- Reset K8s Namespace: ```kubectl delete namespace <namespace-name>```
-
 # Stop and delete Minikube cluster (but still installed)
 - Stop Minikube cluster: ```minikube stop  ```
 - Delete Minikube cluster: ```minikube delete```
 
+(ONLY IF IS NOT DEFAULT NAMESPACE)
+- Get K8s Namespaces: ```kubectl get namespaces```
+- Reset K8s Namespace: ```kubectl delete namespace <namespace-name>```
 
 - List Docker images: ```docker images```
 - Remove Docker Images: ```docker rmi <image-name>``
