@@ -7,6 +7,14 @@ then
     exit 1
 fi
 
+# Execution command for the second script: ```$ ./k8s_harbor_deploy.sh <docker-image-path> <image-name> <project-name>```
+    # 1. ```<docker-image-path>```: You have to define a path where the docker image will be available.
+    # 2. ```<image-name>```: Here is where you define the name of the docker image for building and Harbor purposes.
+    # 3. ```<project-name>```: For Harbor registry you have to specify a directory (project-name) where each project (docker image) will be stored.
+    # 4. NOTE: This call will build the Docker image from the specified directory, tag it with the image custom name, create a custom directory name inside of Harbor and define a
+        # - If you omit the second parameter, it will default to "harbor-image". 
+        # - If you omit the third parameter, it will default to "aarayav-project". 
+
 # ------------- SCRIPT GLOBAL VARIABLES
 
 DOCKER_DIR=$1 # First argument assigned
