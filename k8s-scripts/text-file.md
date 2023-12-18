@@ -69,7 +69,7 @@ Use command ```helm fetch harbor/harbor --untar``` to download/unzip all configu
     - use command ```minikube ip``` to get Minikube k8s cluster IP.
     - Use command ```sudo nano /etc/hosts``` to add at the bottom a custom localhost name line with Minikube cluster IP ```192.168.49.2```.
     - Use localhost name ```harbor.localdomain.com``` and setup in Harbor ```values.yaml``` Ingress configuration. 
-    ![local hosts](image.png)
+    ![local hosts](image-5.png)
 
 
 # ./test2.sh /home/aarayav/root/devops-challenge/k8s-scripts/nginx_server/ nginx-image nginx-project

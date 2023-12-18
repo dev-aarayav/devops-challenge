@@ -31,14 +31,13 @@
 
 - Instructions
     - Clone the project locally in Ubuntu machine.
-    - Open folder "k8s-scripts" and use scripts in the following order:
-        1. ```minikue_k8s_setup.sh```: This script is to proceed with the installation of Kubernetes tools & Minikube.
-        2. ```harbor-k8s-deployment.sh```: This script is to proceed with Harbor deployment in K8s cluster and upload/download of Docker images in Harbor registry.
-        3. ```rm_k8s```: OPTIONAL, if the installation goes wrong for any reason, this script removes K8s and minikube.
+    - Open folder "k8s-scripts" and use scripts as below:
+        1. ```k8s_harbor_deploy.sh```: This script contains the complete logic to validate all the tools required to run Harbor Registry in a Kubernetes cluster using Minikube.
+        2. ```get_helm.sh```: This script is to install Helm ONLY but it is called inside of the principal script so it will be automatically executed.
+        2. ```rm_k8s```: OPTIONAL, if the installation goes wrong for any reason, this script removes K8s and minikube.
     - Run the following command before starting script: ```sudo apt-get update && sudo apt upgrade -y```
     - Grant execution access to each script: ```$ chmod +x ./name-of-script```
-    - Execution command for the first script: ```$ ./minikue_k8s_setup.sh```
-    - Execution command for the second script: ```$ ./harbor-k8s-deployment.sh <docker-image-path> <image-name> <project-name>```
+    - Execution command for the second script: ```$ ./k8s_harbor_deploy.sh <docker-image-path> <image-name> <project-name>```
         1. ```<docker-image-path>```: You have to define a path where the docker image will be available.
         2. ```<image-name>```: Here is where you define the name of the docker image for building and Harbor purposes.
         3. ```<project-name>```: For Harbor registry you have to specify a directory (project-name) where each project (docker image) will be stored.
