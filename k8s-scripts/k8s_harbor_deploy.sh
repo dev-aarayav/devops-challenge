@@ -11,6 +11,7 @@ TAG="v1"
 
 # minikube-k8s
 cluster_namespace="harbor" # Name
+HARBOR_DEFAULT_VALUES_PATH="/home/aarayav/root/devops-challenge/k8s-scripts/harbor"
 
 # errores
 # ./test.sh: line 174: unexpected EOF while looking for matching `"'
@@ -308,8 +309,8 @@ kubectl config set-context --current --namespace=$cluster_namespace
 
 # Step 0: Harbor chart installation with Helm into Harbor namespace
 echo "Installing Harbor chart..."
-
-helm install harbor harbor -f harbor/values.yaml &> /dev/null
+# ***************************************************************************************************************************
+helm install harbor harbor -f $HARBOR_DEFAULT_VALUES_PATH/values.yaml &> /dev/null
 
 if [ $? -ne 0 ] # validates that helm install command exit code.
 then
@@ -321,7 +322,7 @@ fi
 # Check Harbor namespace existence after installation
 echo "Checking if namespace '$cluster_namespace' exists in the Minikube cluster..."
 check_harbor_namespace
-
+# ***************************************************************************************************************************
 # Completion messages
 echo "Namespace Validation completed..."
 echo "-------------------------------"
