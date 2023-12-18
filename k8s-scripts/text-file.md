@@ -68,7 +68,7 @@ Use command ```helm fetch harbor/harbor --untar``` to download/unzip all configu
 1. Ingress: The Ingress configuration in the values.yaml file for Harbor controls how Harbor is exposed to external traffic through Ingress in Kubernetes.
     - use command ```minikube ip``` to get Minikube k8s cluster IP.
     - Use command ```sudo nano /etc/hosts``` to add at the bottom a custom localhost name line with Minikube cluster IP ```192.168.49.2```.
-    - Use localhost name ```harbor.localdomain.com``` and setup in Harbor ```values.yaml``` Ingress configuration. 
+    - Use localhost name ```harbor.local.registry.com``` and setup in Harbor ```values.yaml``` Ingress configuration. 
 
     ![local hosts](image-5.png)
 
