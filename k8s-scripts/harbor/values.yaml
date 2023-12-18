@@ -45,7 +45,7 @@ expose:
     controller: default
     ## Allow .Capabilities.KubeVersion.Version to be overridden while creating ingress
     kubeVersionOverride: ""
-    className: ""
+    className: "nginx"
     annotations:
       # note different ingress controllers may require a different ssl-redirect annotation
       # for Envoy, use ingress.kubernetes.io/force-ssl-redirect: "true" and remove the nginx lines below
@@ -53,6 +53,7 @@ expose:
       ingress.kubernetes.io/proxy-body-size: "0"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      nginx.org/client-max-body-size: "0"
     harbor:
       # harbor ingress-specific annotations
       annotations: {}
@@ -108,7 +109,7 @@ expose:
 # the IP address of k8s node
 #
 # If Harbor is deployed behind the proxy, set it as the URL of proxy
-externalURL: https://core.harbor.domain
+externalURL: https://harbor.localdomain.com
 
 # The internal TLS used for harbor components secure communicating. In order to enable https
 # in each component tls cert files need to provided in advance.
@@ -345,7 +346,7 @@ logLevel: info
 # key in secret is given via (default to HARBOR_ADMIN_PASSWORD)
 # existingSecretAdminPassword:
 existingSecretAdminPasswordKey: HARBOR_ADMIN_PASSWORD
-harborAdminPassword: "Harbor12345"
+harborAdminPassword: "Alex1234"
 
 # The name of the secret which contains key named "ca.crt". Setting this enables the
 # download link on portal to download the CA certificate when the certificate isn't

@@ -2,12 +2,15 @@
 
 # ---------------- GLOBAL VARIABLES
 
+# harbor
 DOCKER_DIR=$1 # First argument assigned
 IMAGE_NAME=$2 # Second argument assigned
 PROJECT_NAME=$3 # Third argument assigned
-cluster_namespace="harbor" # Name
 HARBOR_REGISTRY="localhost:5000" 
 TAG="v1"
+
+# minikube-k8s
+cluster_namespace="harbor" # Name
 
 # errores
 # ./test.sh: line 174: unexpected EOF while looking for matching `"'
@@ -249,6 +252,24 @@ check_harbor_namespace() {
     fi
 }
 
+# 06 Function to check Harbor namespace existence
+check_harbor_namespace() {
+    if kubectl get namespace "$cluster_namespace" &> /dev/null
+    then
+        echo "Namespace '$cluster_namespace' exists in the Minikube cluster..."
+    else
+        echo "Namespace '$cluster_namespace' does not exist in the Minikube cluster..."
+        echo "Attempting to create the namespace..."
+
+        if ! kubectl create namespace "$cluster_namespace"
+        then
+            echo "Failed to create namespace '$cluster_namespace'. Exiting script..."
+            exit 1
+        fi
+        echo "Namespace '$cluster_namespace' created successfully..."
+    fi
+}
+
 
 # ---------------- START OF SCRIPT
 
@@ -279,16 +300,25 @@ helm repo add harbor https://helm.goharbor.io
 # Extra command necessary before Helm installation.
 # helm fetch harbor/harbor --untar
 
-# Step 0: Harbor chart installation with Helm
+# Step 0: Call function 06 to check Harbor namespace existence
+check_harbor_namespace
+
+# Step 0: Change context to Harbor namespace
+kubectl config set-context --current --namespace=$cluster_namespace
+
+# Step 0: Harbor chart installation with Helm into Harbor namespace
 echo "Installing Harbor chart..."
-if ! helm install harbor harbor/harbor --namespace="$cluster_namespace" --create-namespace --wait --set expose.type=nodePort
+
+helm install harbor harbor -f harbor/values.yaml &> /dev/null
+
+if [ $? -ne 0 ] # validates that helm install command exit code.
 then
     echo "Helm installation of Harbor in '$cluster_namespace' namespace failed..."
     echo "Please check the Helm logs for more details."
     exit 1
 fi
 
-# Step 0: Call function 06 to check Harbor namespace existence
+# Check Harbor namespace existence after installation
 echo "Checking if namespace '$cluster_namespace' exists in the Minikube cluster..."
 check_harbor_namespace
 

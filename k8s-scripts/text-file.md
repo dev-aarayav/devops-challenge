@@ -7,7 +7,7 @@
 - rm -rf ~/.helm
 
 # Stop and delete Minikube cluster (but still installed)
-- Stop Minikube cluster: ```minikube stop  ```
+- Stop Minikube cluster: ```minikube stop```
 - Delete Minikube cluster: ```minikube delete```
 
 (ONLY IF IS NOT DEFAULT NAMESPACE)
@@ -69,7 +69,27 @@ Use command ```helm fetch harbor/harbor --untar``` to download/unzip all configu
     - use command ```minikube ip``` to get Minikube k8s cluster IP.
     - Use command ```sudo nano /etc/hosts``` to add at the bottom a custom localhost name line with Minikube cluster IP ```192.168.49.2```.
     - Use localhost name ```harbor.localdomain.com``` and setup in Harbor ```values.yaml``` Ingress configuration. 
+
     ![local hosts](image-5.png)
 
+2. IngressClassName: is an attribute used to specify the class name of an Ingress controller in Kubernetes. It's part of the Ingress resource configuration and is used to associate an Ingress resource with a specific Ingress controller. In this case was setup ```nginx``` as the ClassName.
+
+3. Added the following annotation ```nginx.org/client-max-body-size: "0"``` and is used to set the maximum allowed size of the client request body in an NGINX-based Ingress controller configuration in Kubernetes.  Setting it to a specific value (in this case, "0") implies there is no size limit enforced by NGINX itself. A value of "0" means "unlimited" or "no restriction" on the client request body size. In this case is helpful so that we can upload large docker images without any size limit issue.
+
+![image-6](image.png)
+
+4. Annotation externalURL: Use the same hostname as in step 1 Ingress configuration.
+
+![image-7](image.png)
+
+5. Persistance configuration: 
+
+6. Change ```harborAdminPassword``` annotation value with your custom password. In this case the password will be ```Alex1234``` and the user ```admin```
+
+
+# kubectl commands
+- ```kubectl get pvc```: This should be executed for a namespace in specific to get all the volumes setup.
+- ```kubectl get svc```: Shows ClusterIP that has the Harbor registry service running on port 5000TCP, 8080/TCP
+- ```kubectl get ingress```: Shows the Ingress created to access Harbor using the localhostname setup in /etc/hosts path.
 
 # ./test2.sh /home/aarayav/root/devops-challenge/k8s-scripts/nginx_server/ nginx-image nginx-project
