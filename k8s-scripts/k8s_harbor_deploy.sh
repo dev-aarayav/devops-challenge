@@ -2,9 +2,17 @@
 
 # ---------------- GLOBAL VARIABLES
 
+DOCKER_DIR=$1 # First argument assigned
+IMAGE_NAME=$2 # Second argument assigned
+PROJECT_NAME=$3 # Third argument assigned
+cluster_namespace="harbor" # Name
+HARBOR_REGISTRY="localhost:5000" 
+TAG="v1"
+
 # errores
 # ./test.sh: line 174: unexpected EOF while looking for matching `"'
 # ./test.sh: line 179: syntax error: unexpected end of file
+# Error: INSTALLATION FAILED: execution error at (harbor/templates/nginx/secret.yaml:3:12): The "expose.tls.auto.commonName" is required!
 
 
 # ---------------- FUNCTIONS
@@ -229,6 +237,18 @@ install_helm() {
     sleep 5
 }
 
+# 06 Function to check Harbor namespace existence
+check_harbor_namespace() {
+    if kubectl get namespace "$cluster_namespace" &> /dev/null
+    then
+        echo "Namespace '$cluster_namespace' exists in the Minikube cluster."
+    else
+        echo "Namespace '$cluster_namespace' does not exist in the Minikube cluster..."
+        echo "Please create the namespace manually and try installing Harbor again..."
+        exit 1
+    fi
+}
+
 
 # ---------------- START OF SCRIPT
 
@@ -237,14 +257,14 @@ echo "Initializing K8s/Minikube script process..."
 # Step 0: Call function 01 to verify Docker installation.
 docker_setup
 
-# Step 0: Call function 02 to install Minikube and if Docker engine is installed:
-install_minikube
-
 # Step 0: Call function 03 to validate if K8s tools are installed if not exit 1:
 k8s_tools_validation
 
-# Resoponse related Minikube setup finished correclty.
-echo "Minikube ready..."
+# Step 0: Call function 02 to install Minikube and if Docker engine is installed (requires kubctl tool):
+install_minikube
+
+# Completion messages
+echo "Minikube cluster ready..."
 echo "--------------------------------"
 echo "--------------------------------"
 sleep 5
@@ -252,9 +272,60 @@ sleep 5
 # Step 0: Call function 05 to install Helm
 install_helm
 
+# Step 0: Add Harbor Helm repository into local Helm setup
+echo "Adding Harbor to local Helm setup..."
+helm repo add harbor https://helm.goharbor.io
+
+# Extra command necessary before Helm installation.
+# helm fetch harbor/harbor --untar
+
+# Step 0: Harbor chart installation with Helm
+echo "Installing Harbor chart..."
+if ! helm install harbor harbor/harbor --namespace="$cluster_namespace" --create-namespace --wait --set expose.type=nodePort
+then
+    echo "Helm installation of Harbor in '$cluster_namespace' namespace failed..."
+    echo "Please check the Helm logs for more details."
+    exit 1
+fi
+
+# Step 0: Call function 06 to check Harbor namespace existence
+echo "Checking if namespace '$cluster_namespace' exists in the Minikube cluster..."
+check_harbor_namespace
+
+# Completion messages
+echo "Namespace Validation completed..."
+echo "-------------------------------"
+echo "-------------------------------"
+sleep 5 # Stop to understand process
+
+# Step 0: Valdiation of Harbor pods running in K8s cluster...
+echo "Starting Harbor pods validation..."
+
+while true
+do
+    RUNNING_PODS=$(kubectl get pods -n $cluster_namespace --selector=app=harbor --field-selector=status.phase=Running | grep -c Running)
+    TOTAL_PODS=$(kubectl get pods -n $cluster_namespace --selector=app=harbor | grep -c Running)
+
+    # Testing Purposes
+    echo "Waiting for Harbor pods to be ready..."
+    echo "RUNNING_PODS: $RUNNING_PODS"
+    echo "TOTAL_PODS: $TOTAL_PODS"
+
+    if [ "$RUNNING_PODS" -eq "$TOTAL_PODS" ]
+    then
+        break
+    fi
+done
+
+# Completion messages
+echo "All pods ${TOTAL_PODS} from ${cluster_namespace} namespace are running..."
+echo "Harbor deployment is ready!"
+echo "-------------------------------"
+echo "-------------------------------"
+sleep 5 # Pause
 
 # Finish script
 echo "Task completed..."
 echo "--------------------------------"
 echo "--------------------------------"
-sleep 5
+sleep 5 # Pause

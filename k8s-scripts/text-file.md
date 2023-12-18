@@ -3,6 +3,8 @@
 ### Required commands to stop and clean up services after running your script to reset the environment:
 - List all Helm releases across all namespaces (-A flag): ```helm list -A```
 - Remove Helm Release (Harbor deployment): ```helm uninstall <release-name>```
+- sudo rm $(which helm)
+- rm -rf ~/.helm
 
 # Stop and delete Minikube cluster (but still installed)
 - Stop Minikube cluster: ```minikube stop  ```
@@ -56,6 +58,18 @@
 
 Each of these pods represents a different component or service within the Harbor deployment, contributing to its functionality as a container registry and image management system.
 
+### Commands to fix an issue with unsupported version of K8s
+![Minikube workdaround](image-4.png)
+
+
+### Harbor Values setup
+Use command ```helm fetch harbor/harbor --untar``` to download/unzip all configuration files of Harbor.
+
+1. Ingress: The Ingress configuration in the values.yaml file for Harbor controls how Harbor is exposed to external traffic through Ingress in Kubernetes.
+    - use command ```minikube ip``` to get Minikube k8s cluster IP.
+    - Use command ```sudo nano /etc/hosts``` to add at the bottom a custom localhost name line with Minikube cluster IP ```192.168.49.2```.
+    - Use localhost name ```harbor.localdomain.com``` and setup in Harbor ```values.yaml``` Ingress configuration. 
+    ![local hosts](image.png)
 
 
 # ./test2.sh /home/aarayav/root/devops-challenge/k8s-scripts/nginx_server/ nginx-image nginx-project

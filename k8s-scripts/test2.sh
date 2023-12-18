@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Error: INSTALLATION FAILED: execution error at (harbor/templates/nginx/secret.yaml:3:12): The "expose.tls.auto.commonName" is required!
-
 # This validation checks if the number of arguments ($#) passed to the script is less than 3.
 if [ $# -lt 3 ]
 then
@@ -74,90 +72,10 @@ manage_image() {
     fi
 }
 
-check_harbor_namespace() {
-
-    # K8s Harbor namespace validation
-    if kubectl get namespace "$cluster_namespace" &> /dev/null
-    then
-        echo "Namespace '$cluster_namespace' exists in the Minikube cluster."
-    else
-        echo "Namespace '$cluster_namespace' does not exist in the Minikube cluster."
-
-        # Attempt to create the namespace
-        if kubectl create namespace "$cluster_namespace" &> /dev/null
-        then
-            echo "Namespace '$cluster_namespace' created successfully."
-        else
-            echo "Failed to create namespace '$cluster_namespace'. Exiting..."
-            exit 1  # Exit the script with a status code of 1 indicating an error
-        fi
-    fi
-}
 
 # ------------- START OF SCRIPT
 
 
-
-# Helm binary download
-echo "Downloading Helm binary..."
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-
-# Helm Installation
-echo "Installing Helm..."
-chmod 700 get_helm.sh
-./get_helm.sh # Execute script
-
-# Completion messages
-echo "Helm installation completed..."
-echo "-------------------------------"
-echo "-------------------------------"
-sleep 5 # Stop here to understand better functionality.
-
-# Add Harbor Helm repository into local Helm setup
-echo "Adding Harbor to local Helm setup..."
-helm repo add harbor https://helm.goharbor.io
-sleep 3
-
-# Harbor chart installation with Helm
-helm install harbor harbor/harbor --namespace=$cluster_namespace --create-namespace --wait --set expose.type=nodePort
-echo "Checking if namespace '$cluster_namespace' exists in the Minikube cluster..."
-
-
-# Function to Check Harbor namespace existance
-check_harbor_namespace
-
-# Completion messages
-echo "Validation completed..."
-echo "-------------------------------"
-echo "-------------------------------"
-sleep 5 # Stop to understand process
-
-
-echo "Starting Harbor pods validation..."
-
-# Valdiation of Harbor pods running in K8s cluster...
-while true
-do
-    RUNNING_PODS=$(kubectl get pods -n $cluster_namespace --selector=app=harbor --field-selector=status.phase=Running | grep -c Running)
-    TOTAL_PODS=$(kubectl get pods -n $cluster_namespace --selector=app=harbor | grep -c Running)
-
-    # Testing Purposes
-    echo "Waiting for Harbor pods to be ready..."
-    echo "RUNNING_PODS: $RUNNING_PODS"
-    echo "TOTAL_PODS: $TOTAL_PODS"
-
-    if [ "$RUNNING_PODS" -eq "$TOTAL_PODS" ]
-    then
-        break
-    fi
-done
-
-echo "Validation completed..."
-echo "-------------------------------"
-echo "-------------------------------"
-sleep 5
-echo "All pods from Harbor namespace are running..."
-echo "Harbor deployment is ready!"
 
 # Check Harbor Registry availability
 check_harbor_availability
