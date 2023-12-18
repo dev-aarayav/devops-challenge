@@ -11,6 +11,7 @@ TAG="v1"
 
 # minikube-k8s
 cluster_namespace="harbor" # Name
+HARBOR_CHART_PATH="/home/aarayav/root/devops-challenge/k8s-scripts"
 
 # errores
 # ./test.sh: line 174: unexpected EOF while looking for matching `"'
@@ -103,10 +104,10 @@ echo "Starting Minikube Installation process..."
     # Function to validate Minikube cluster readiness
     validate_minikube_cluster() {
         echo "Validating Minikube cluster..."
-        while true
-        do
-            STATUS=$(kubectl get nodes --no-headers | grep "Ready")
-            if [ -n "$STATUS" ]
+        while true; do
+            # Processes the input from the previous command (kubectl get nodes) using awk. {print $2} tells awk to print the second column of data from each line of input.
+            STATUS=$(kubectl get nodes --no-headers | awk '{print $2}')
+            if [ "$STATUS" == "Ready" ]
             then
                 echo "Minikube nodes are ready:"
                 kubectl get nodes
@@ -120,6 +121,12 @@ echo "Starting Minikube Installation process..."
 
     # Call function "validate_minikube_cluster"
     validate_minikube_cluster
+
+    # Extra commands to enable Ingress addons in Minikube
+    # minikube addons enable ingress
+    # minikube addons enable ingress-dns
+    
+    # Finish
     echo "Minikube initialized correctly..."
 
 }
@@ -311,18 +318,18 @@ kubectl config set-context --current --namespace=$cluster_namespace
 # Step 0: Harbor chart installation with Helm into Harbor namespace
 echo "Installing Harbor chart..."
 
-helm install harbor harbor/harbor -f /home/aarayav/root/devops-challenge/k8s-scripts/values.yaml -f /home/aarayav/root/devops-challenge/k8s-scripts/values-extra.yaml &> /dev/null
+# helm install harbor harbor/harbor -f /home/aarayav/root/devops-challenge/k8s-scripts/values.yaml -f /home/aarayav/root/devops-challenge/k8s-scripts/values-extra.yaml
+helm install harbor harbor/harbor -f ${HARBOR_CHART_PATH}/values.yaml -f ${HARBOR_CHART_PATH}/values-extra.yaml
 
-if [ $? -ne 0 ] # validates that helm install command exit code.
+# Check Helm installation success
+if [ $? -eq 0 ]
 then
+    echo "Helm installation of Harbor in '$cluster_namespace' namespace succeeded!"
+else
     echo "Helm installation of Harbor in '$cluster_namespace' namespace failed..."
     echo "Please check the Helm logs for more details."
     exit 1
 fi
-
-# Check Harbor namespace existence after installation
-echo "Checking if namespace '$cluster_namespace' exists in the Minikube cluster..."
-check_harbor_namespace
 
 # Completion messages
 echo "Namespace Validation completed..."

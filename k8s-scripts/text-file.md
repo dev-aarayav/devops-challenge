@@ -62,7 +62,7 @@ Each of these pods represents a different component or service within the Harbor
 ![Minikube workdaround](image-4.png)
 
 
-### Harbor Values setup
+### Harbor troubleshooting
 Use command ```helm fetch harbor/harbor --untar``` to download/unzip all configuration files of Harbor.
 
 1. Ingress: The Ingress configuration in the values.yaml file for Harbor controls how Harbor is exposed to external traffic through Ingress in Kubernetes.
@@ -86,10 +86,19 @@ Use command ```helm fetch harbor/harbor --untar``` to download/unzip all configu
 
 6. Change ```harborAdminPassword``` annotation value with your custom password. In this case the password will be ```Alex1234``` and the user ```admin```
 
+7. Add a DNS line in file "resolv.conf" located in /etc/resolv.conf where you should add the Minikube IP to be part of the resolve DNS available.
+
 
 # kubectl commands
 - ```kubectl get pvc```: This should be executed for a namespace in specific to get all the volumes setup.
 - ```kubectl get svc```: Shows ClusterIP that has the Harbor registry service running on port 5000TCP, 8080/TCP
 - ```kubectl get ingress```: Shows the Ingress created to access Harbor using the localhostname setup in /etc/hosts path.
+- ```kubectl describe secret <secret-name>```: Check the details of this secret and its content.
+- ```minikube addons enable ingress```: To enable the NGINX Ingress controller.
+- ```curl --resolve "harbor.local.registry.com:80:$(minikube ip)" -i http://harbor.local.registry.com```: curl is makng HTTP requests to the localhost name at port 80 defined in Helm Chart and the flag ```--resolve``` to override the DNS lookup with a specific IP address for the given hostname.
+
+### Resources
+- Kubernetes documentation about Ingress https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/
+- Minikube solution for Ingress access https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns/
 
 # ./test2.sh /home/aarayav/root/devops-challenge/k8s-scripts/nginx_server/ nginx-image nginx-project
