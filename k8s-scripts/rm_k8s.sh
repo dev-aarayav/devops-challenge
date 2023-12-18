@@ -26,6 +26,12 @@ remove_kubernetes_minikube() {
     echo "Kubernetes and Minikube have been completely removed."
 }
 
+remove_helm() {
+    sudo rm /usr/local/bin/helm # Remove Helm Binary
+    rm -rf ~/.helm # Remove Helm config files in /home
+    rm -rf ~/.config/helm # Remove Helm Data
+}
+
 # Confirm action before removal
 read -p "This will completely remove Kubernetes and Minikube. Do you want to proceed? (yes/no): " choice
 case "$choice" in

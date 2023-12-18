@@ -8,9 +8,11 @@
 - Get K8s Namespaces: ```kubectl get namespaces```
 - Reset K8s Namespace: ```kubectl delete namespace <namespace-name>```
 
+# Stop and delete Minikube cluster (but still installed)
+- Stop Minikube cluster: ```minikube stop  ```
+- Delete Minikube cluster: ```minikube delete```
 
-- Stop Minikube: ```minikube stop  ```
-- Delete Minikube: ```minikube delete```
+
 - List Docker images: ```docker images```
 - Remove Docker Images: ```docker rmi <image-name>``
 
