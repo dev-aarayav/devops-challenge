@@ -1,7 +1,7 @@
 expose:
   type: ingress
   tls:
-    enabled: true
+    enabled: true  # Disable TLS/SSL
     certSource: auto
     auto:
       commonName: ""
@@ -9,6 +9,7 @@ expose:
       secretName: ""
   ingress:
     hosts:
+      enabled: true
       core: harbor.local.registry.com
     controller: default
     kubeVersionOverride: ""
@@ -18,8 +19,7 @@ expose:
       ingress.kubernetes.io/proxy-body-size: "0"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: "0"
-
-    nginx.org/client-max-body-size: "0"
+      nginx.org/client-max-body-size: "0"
 
 externalURL: https://harbor.local.registry.com
 
@@ -66,3 +66,8 @@ persistence:
 
 existingSecretAdminPasswordKey: HARBOR_ADMIN_PASSWORD
 harborAdminPassword: "Alex1234"
+
+ipFamily:
+  # ipv6Enabled set to true if ipv6 is enabled in cluster, currently it affected the nginx related component
+  ipv6:
+    enabled: false

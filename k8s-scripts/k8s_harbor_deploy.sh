@@ -2,22 +2,9 @@
 
 # ---------------- GLOBAL VARIABLES
 
-# harbor
-DOCKER_DIR=$1 # First argument assigned
-IMAGE_NAME=$2 # Second argument assigned
-PROJECT_NAME=$3 # Third argument assigned
-HARBOR_REGISTRY="localhost:5000" 
-TAG="v1"
-
 # minikube-k8s
 cluster_namespace="harbor" # Name
 HARBOR_CHART_PATH="/home/aarayav/root/devops-challenge/k8s-scripts"
-
-# errores
-# ./test.sh: line 174: unexpected EOF while looking for matching `"'
-# ./test.sh: line 179: syntax error: unexpected end of file
-# Error: INSTALLATION FAILED: execution error at (harbor/templates/nginx/secret.yaml:3:12): The "expose.tls.auto.commonName" is required!
-
 
 # ---------------- FUNCTIONS
 
@@ -121,10 +108,6 @@ echo "Starting Minikube Installation process..."
 
     # Call function "validate_minikube_cluster"
     validate_minikube_cluster
-
-    # Extra commands to enable Ingress addons in Minikube
-    # minikube addons enable ingress
-    # minikube addons enable ingress-dns
     
     # Finish
     echo "Minikube initialized correctly..."
@@ -305,9 +288,11 @@ echo "Adding Harbor to local Helm setup..."
 helm repo add harbor https://helm.goharbor.io
 
 # Extra command necessary before Helm installation.
-echo "Pulling harbor configuration files locally..."
-echo "Adding harbor directory in current location..."
-helm fetch harbor/harbor --untar
+# helm fetch harbor/harbor --untar
+
+# Enabling Minikine Ingress Addons
+# ERROR when running minikube addons enable ingress:  INSTALLATION FAILED: 1 error occurred: * Internal error occurred: failed calling webhook "validate.nginx.ingress.kubernetes.io": failed to call webhook: Post "https://ingress-nginx-controller-admission.ingress-nginx.svc:443/networking/v1/ingresses?timeout=10s": dial tcp 10.109.125.240:443: connect: connection refused
+# minikube addons enable ingress
 
 # Step 0: Call function 06 to check Harbor namespace existence
 check_harbor_namespace
@@ -317,9 +302,7 @@ kubectl config set-context --current --namespace=$cluster_namespace
 
 # Step 0: Harbor chart installation with Helm into Harbor namespace
 echo "Installing Harbor chart..."
-
-# helm install harbor harbor/harbor -f /home/aarayav/root/devops-challenge/k8s-scripts/values.yaml -f /home/aarayav/root/devops-challenge/k8s-scripts/values-extra.yaml
-helm install harbor harbor/harbor -f ${HARBOR_CHART_PATH}/values.yaml -f ${HARBOR_CHART_PATH}/values-extra.yaml
+helm install harbor harbor/harbor # -f ${HARBOR_CHART_PATH}/values.yaml # -f ${HARBOR_CHART_PATH}/values-extra.yaml
 
 # Check Helm installation success
 if [ $? -eq 0 ]
@@ -336,32 +319,6 @@ echo "Namespace Validation completed..."
 echo "-------------------------------"
 echo "-------------------------------"
 sleep 5 # Stop to understand process
-
-# Step 0: Valdiation of Harbor pods running in K8s cluster...
-echo "Starting Harbor pods validation..."
-
-while true
-do
-    RUNNING_PODS=$(kubectl get pods -n $cluster_namespace --selector=app=harbor --field-selector=status.phase=Running | grep -c Running)
-    TOTAL_PODS=$(kubectl get pods -n $cluster_namespace --selector=app=harbor | grep -c Running)
-
-    # Testing Purposes
-    echo "Waiting for Harbor pods to be ready..."
-    echo "RUNNING_PODS: $RUNNING_PODS"
-    echo "TOTAL_PODS: $TOTAL_PODS"
-
-    if [ "$RUNNING_PODS" -eq "$TOTAL_PODS" ]
-    then
-        break
-    fi
-done
-
-# Completion messages
-echo "All pods ${TOTAL_PODS} from ${cluster_namespace} namespace are running..."
-echo "Harbor deployment is ready!"
-echo "-------------------------------"
-echo "-------------------------------"
-sleep 5 # Pause
 
 # Finish script
 echo "Task completed..."

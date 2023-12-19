@@ -19,17 +19,19 @@ uninstall_kubernetes_tools() {
     echo "--------------------------------"
 }
 
-# Function to completely remove Kubernetes and Minikube
-remove_kubernetes_minikube() {
-    uninstall_minikube
-    uninstall_kubernetes_tools
-    echo "Kubernetes and Minikube have been completely removed."
-}
 
 remove_helm() {
     sudo rm /usr/local/bin/helm # Remove Helm Binary
     rm -rf ~/.helm # Remove Helm config files in /home
     rm -rf ~/.config/helm # Remove Helm Data
+}
+
+# Function to completely remove Kubernetes and Minikube
+remove_kubernetes_minikube() {
+    uninstall_minikube
+    uninstall_kubernetes_tools
+    remove_helm
+    echo "Kubernetes and Minikube have been completely removed."
 }
 
 # Confirm action before removal

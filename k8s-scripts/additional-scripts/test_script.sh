@@ -83,7 +83,33 @@ manage_image() {
 
 # ------------- START OF SCRIPT
 
+# Step 0: Valdiation of Harbor pods running in K8s cluster...
+echo "Starting Harbor pods validation..."
 
+echo "Starting Harbor pods validation..."
+
+# Loop validation to verify that all pods in cluster are in "Running" status
+while true; do
+    RUNNING_PODS=$(kubectl get pods -n "$cluster_namespace" --selector=app=harbor --field-selector=status.phase=Running | grep -c Running)
+    TOTAL_PODS=$(kubectl get pods -n "$cluster_namespace" --selector=app=harbor | grep -c Running)
+
+    # Testing Purposes
+    echo "Waiting for Harbor pods to be ready..."
+    echo "RUNNING_PODS: $RUNNING_PODS"
+    echo "TOTAL_PODS: $TOTAL_PODS"
+
+    if [ "$RUNNING_PODS" -eq "$TOTAL_PODS" ] && [ "$TOTAL_PODS" -ne 0 ]
+    then
+        echo "All pods $TOTAL_PODS from $cluster_namespace namespace are running..."
+        echo "Harbor deployment is ready!"
+        break
+    elif [ "$TOTAL_PODS" -eq 0 ]; then
+        echo "No pods found in $cluster_namespace namespace. Please check the deployment."
+        exit 1
+    else
+        sleep 5  # Adjust sleep duration as needed
+    fi
+done
 
 # Check Harbor Registry availability
 check_harbor_availability

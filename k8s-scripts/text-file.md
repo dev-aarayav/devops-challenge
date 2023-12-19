@@ -93,6 +93,7 @@ Use command ```helm fetch harbor/harbor --untar``` to download/unzip all configu
 - ```kubectl get pvc```: This should be executed for a namespace in specific to get all the volumes setup.
 - ```kubectl get svc```: Shows ClusterIP that has the Harbor registry service running on port 5000TCP, 8080/TCP
 - ```kubectl get ingress```: Shows the Ingress created to access Harbor using the localhostname setup in /etc/hosts path.
+-  ```kubectl get secrets```: Shows all the Secrets configured.
 - ```kubectl describe secret <secret-name>```: Check the details of this secret and its content.
 - ```minikube addons enable ingress```: To enable the NGINX Ingress controller.
 - ```curl --resolve "harbor.local.registry.com:80:$(minikube ip)" -i http://harbor.local.registry.com```: curl is makng HTTP requests to the localhost name at port 80 defined in Helm Chart and the flag ```--resolve``` to override the DNS lookup with a specific IP address for the given hostname.
@@ -100,5 +101,6 @@ Use command ```helm fetch harbor/harbor --untar``` to download/unzip all configu
 ### Resources
 - Kubernetes documentation about Ingress https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/
 - Minikube solution for Ingress access https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns/
+- YT video of Harbor Private Container Registry in Kubernetes cluster https://www.youtube.com/watch?v=o2vhyZO8A8I&t=186s&ab_channel=EngineeringwithMorris
 
 # ./test2.sh /home/aarayav/root/devops-challenge/k8s-scripts/nginx_server/ nginx-image nginx-project
