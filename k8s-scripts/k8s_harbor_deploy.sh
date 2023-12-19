@@ -234,18 +234,6 @@ install_helm() {
 check_harbor_namespace() {
     if kubectl get namespace "$cluster_namespace" &> /dev/null
     then
-        echo "Namespace '$cluster_namespace' exists in the Minikube cluster."
-    else
-        echo "Namespace '$cluster_namespace' does not exist in the Minikube cluster..."
-        echo "Please create the namespace manually and try installing Harbor again..."
-        exit 1
-    fi
-}
-
-# 06 Function to check Harbor namespace existence
-check_harbor_namespace() {
-    if kubectl get namespace "$cluster_namespace" &> /dev/null
-    then
         echo "Namespace '$cluster_namespace' exists in the Minikube cluster..."
     else
         echo "Namespace '$cluster_namespace' does not exist in the Minikube cluster..."
@@ -265,13 +253,13 @@ check_harbor_namespace() {
 
 echo "Initializing K8s/Minikube script process..."
 
-# Step 0: Call function 01 to verify Docker installation.
+# Step 01: Call function 01 to verify Docker installation.
 docker_setup
 
-# Step 0: Call function 03 to validate if K8s tools are installed if not exit 1:
+# Step 02: Call function 03 to validate if K8s tools are installed if not exit 1:
 k8s_tools_validation
 
-# Step 0: Call function 02 to install Minikube and if Docker engine is installed (requires kubctl tool):
+# Step 03: Call function 02 to install Minikube and if Docker engine is installed (requires kubctl tool):
 install_minikube
 
 # Completion messages
@@ -280,31 +268,24 @@ echo "--------------------------------"
 echo "--------------------------------"
 sleep 5
 
-# Step 0: Call function 05 to install Helm
+# Step 04: Call function 05 to install Helm
 install_helm
 
-# Step 0: Add Harbor Helm repository into local Helm setup
+# Step 05: Add Harbor Helm repository into local Helm setup
 echo "Adding Harbor to local Helm setup..."
 helm repo add harbor https://helm.goharbor.io
 
-# Extra command necessary before Helm installation.
-# helm fetch harbor/harbor --untar
-
-# Enabling Minikine Ingress Addons
-# ERROR when running minikube addons enable ingress:  INSTALLATION FAILED: 1 error occurred: * Internal error occurred: failed calling webhook "validate.nginx.ingress.kubernetes.io": failed to call webhook: Post "https://ingress-nginx-controller-admission.ingress-nginx.svc:443/networking/v1/ingresses?timeout=10s": dial tcp 10.109.125.240:443: connect: connection refused
-# minikube addons enable ingress
-
-# Step 0: Call function 06 to check Harbor namespace existence
+# Step 06: Call function 06 to check Harbor namespace existence
 check_harbor_namespace
 
-# Step 0: Change context to Harbor namespace
+# Step 07: Change context to Harbor namespace
 kubectl config set-context --current --namespace=$cluster_namespace
 
-# Step 0: Harbor chart installation with Helm into Harbor namespace
+# Step 08: Harbor chart installation with Helm into Harbor namespace
 echo "Installing Harbor chart..."
-helm install harbor harbor/harbor # -f ${HARBOR_CHART_PATH}/values.yaml # -f ${HARBOR_CHART_PATH}/values-extra.yaml
+helm install harbor harbor/harbor -f ${HARBOR_CHART_PATH}/values.yaml -f ${HARBOR_CHART_PATH}/values-extra.yaml
 
-# Check Helm installation success
+# Step09: Check Helm installation success
 if [ $? -eq 0 ]
 then
     echo "Helm installation of Harbor in '$cluster_namespace' namespace succeeded!"

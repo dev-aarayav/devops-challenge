@@ -90,12 +90,15 @@ Use command ```helm fetch harbor/harbor --untar``` to download/unzip all configu
 
 
 # kubectl commands
+- ```helm fetch harbor/harbor --untar```: This command pulls all Harbor configuration files into a local directory. Useful for values.yaml modifications.
 - ```kubectl get pvc```: This should be executed for a namespace in specific to get all the volumes setup.
 - ```kubectl get svc```: Shows ClusterIP that has the Harbor registry service running on port 5000TCP, 8080/TCP
 - ```kubectl get ingress```: Shows the Ingress created to access Harbor using the localhostname setup in /etc/hosts path.
 -  ```kubectl get secrets```: Shows all the Secrets configured.
 - ```kubectl describe secret <secret-name>```: Check the details of this secret and its content.
 - ```minikube addons enable ingress```: To enable the NGINX Ingress controller.
+    - When setting up this during the script it triggers the following error:
+    # ERROR when running minikube addons enable ingress:  INSTALLATION FAILED: 1 error occurred: * Internal error occurred: failed calling webhook "validate.nginx.ingress.kubernetes.io": failed to call webhook: Post "https://ingress-nginx-controller-admission.ingress-nginx.svc:443/networking/v1/ingresses?timeout=10s": dial tcp 10.109.125.240:443: connect: connection refused
 - ```curl --resolve "harbor.local.registry.com:80:$(minikube ip)" -i http://harbor.local.registry.com```: curl is makng HTTP requests to the localhost name at port 80 defined in Helm Chart and the flag ```--resolve``` to override the DNS lookup with a specific IP address for the given hostname.
 
 ### Resources
