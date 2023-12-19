@@ -47,6 +47,6 @@
 - INSTRUCTIONS: After Installation
     - After executing the script, follow the steps below to confirm that everything is running:
         1. Open in yor browser the following link: https://harbor.local.registry.com
-            ![Harbor UI](screenshots/image-8.png)
+        ![Harbor UI](screenshots/image-8.png)
         
         
