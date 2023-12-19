@@ -8,7 +8,7 @@
     - In case of Docker manual installation, follow [Docker official documentation](https://docs.docker.com/engine/install/ubuntu/)
     - Install a Text editor, in this case is recommended Visual Studio Code. Follow [official docs](https://code.visualstudio.com/docs/setup/windows)
 
-- Instructions
+- INSTRUCTIONS
     - Clone the project locally in Ubuntu machine with Git command: ```git clone https://github.com/dev-aarayav/devops-challenge.git```
     - Open folder "docker-scripts" and use script ```nginx_setup.sh```
     - Run the following command before starting script: ```sudo apt-get update && sudo apt upgrade -y```
@@ -16,10 +16,11 @@
     - Execution command for the script: ```$ ./nginx_setup.sh nginx```
     - Run the following command and check if the Docker container is running: ```$ docker ps```
      * NOTE: It should display an output like below:
-     ![Docker ps output](image.png)
+     ![Docker ps output](screenshots/image.png)
+
     - Open a web browser and access http://localhost:8000 to see Nginx index web page running.
      * NOTE: It should display the following text in browser:
-    ![Nginx Browser Output](image-3.png)
+     ![Nginx Browser Output](screenshots/image-3.png)
 
 ### 2. Run Harbor Resitry in Kubernetes cluster
 - Prerequisites (Windows WSL - Ubuntu)
@@ -29,24 +30,23 @@
     - Minukube start [official documentation](https://minikube.sigs.k8s.io/docs/start/)
     - Install a Text editor, in this case is recommended Visual Studio Code. Follow [official docs](https://code.visualstudio.com/docs/setup/windows)
 
-- Instructions
+- INSTRUCTIONS
     - Clone the project locally in Ubuntu machine.
-    - Open folder "k8s-scripts" and use scripts as below:
-        1. ```k8s_harbor_deploy.sh```: This script contains the complete logic to validate all the tools required to run Harbor Registry in a Kubernetes cluster using Minikube.
-        2. ```get_helm.sh```: This script is to install Helm ONLY but it is called inside of the principal script so it will be automatically executed.
-        2. ```rm_k8s```: OPTIONAL, if the installation goes wrong for any reason, this script removes K8s and minikube.
+    - Open folder "k8s-scripts" use script ```k8s_harbor_deploy.sh```
     - Run the following command before starting script: ```sudo apt-get update && sudo apt upgrade -y```
-    - Grant execution access to each script: ```$ chmod +x ./name-of-script```
-    - Execution command for the second script: ```$ ./k8s_harbor_deploy.sh <docker-image-path> <image-name> <project-name>```
-        1. ```<docker-image-path>```: You have to define a path where the docker image will be available.
-        2. ```<image-name>```: Here is where you define the name of the docker image for building and Harbor purposes.
-        3. ```<project-name>```: For Harbor registry you have to specify a directory (project-name) where each project (docker image) will be stored.
-        4. NOTE: This call will build the Docker image from the specified directory, tag it with the image custom name, create a custom directory name inside of Harbor and define a custom namespace for Harbor deployment into K8s. 
-            - If you omit the second parameter, it will default to "harbor-image". 
-            - If you omit the third parameter, it will default to "aarayav-project".
+    - Grant execution access to script: ```$ chmod +x k8s_harbor_deploy.sh```
+    - Execution command for the script (No Arguments needed): ```$ ./nginx_setup.sh```
+        *NOTE: This script contains the complete logic. It installs Docker, Minikube, K8s tools & Helm. Then it deploys Harbor with Helm into Minikube cluster.*
+
+    *IMPORTANT NOTE*
+    - Inside of directory ```additional-scripts``` you will find the following scripts:
+        1. ```rm_k8s.sh```: If the installation goes wrong for any reason, this script removes K8s and minikube.
+        2. ```get_helm.sh```: This script is to install Helm ONLY (But you can skip it because it's executed inside ```k8s_harbor_deploy.sh```).
+        3. ```test_scrip```: It contains additional functions missing in principal script.
+
+- INSTRUCTIONS: After Installation
     - After executing the script, follow the steps below to confirm that everything is running:
-        1. ```minikube status```: Use this commad to double check that `host`, `kubelet` and `apiserver` appear as `Running`:
-        ![Minikube status](image-1.png)
-        2. ```kubectl get nodes```: You should be able to see `minikube` node as `Ready`:
-        ![kubectl get nodes](image-2.png)
+        1. Open in yor browser the following link: https://harbor.local.registry.com
+            ![Harbor UI](screenshots/image-8.png)
+        
         
