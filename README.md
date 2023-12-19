@@ -35,7 +35,7 @@
     - Open folder "k8s-scripts" use script ```k8s_harbor_deploy.sh```
     - Run the following command before starting script: ```sudo apt-get update && sudo apt upgrade -y```
     - Grant execution access to script: ```$ chmod +x k8s_harbor_deploy.sh```
-    - Execution command for the script (No Arguments needed): ```$ ./nginx_setup.sh```
+    - Execution command for the script (No Arguments needed): ```$ ./k8s_harbor_deploy.sh```
         *NOTE: This script contains the complete logic. It installs Docker, Minikube, K8s tools & Helm. Then it deploys Harbor with Helm into Minikube cluster.*
 
     *IMPORTANT NOTE*
@@ -45,6 +45,13 @@
         3. ```test_scrip```: It contains additional functions missing in principal script.
 
 - INSTRUCTIONS: After Installation
+    - Validate that all K8s resources are up&running:
+        1. ```kubectl get pvc```: This should be executed for a namespace in specific to get all the volumes setup.
+        2. ```kubectl get svc```: Shows ClusterIP that has the Harbor registry service running on port 5000TCP, 8080/TCP
+        3. ```kubectl get ingress```: Shows the Ingress created to access Harbor using the localhostname setup in /etc/hosts path.
+        4. ```kubectl get secrets```: Shows all the Secrets configured.
+        5. ```kubectl describe secret <secret-name>```: Check the details of this secret and its content.
+        
     - After executing the script, follow the steps below to confirm that everything is running:
         1. Open in yor browser the following link: https://harbor.local.registry.com
         ![Harbor UI](screenshots/image-8.png)
