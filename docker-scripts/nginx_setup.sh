@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # VARIABLES
+IMAGE_NAME="$1"
 DOCKER_SCRIPT="$0"
 HOST_PATH="/home/aarayav/nginx_content"
 HTML_CONTENT="<html>
@@ -71,9 +72,6 @@ docker_setup() {
 # Function to check if Docker Nginx image exists & setup of Nginx Docker container.
 nginx_setup(){
 
-    #ARGUMENT
-    local IMAGE_NAME="$1"
-
     # Pull Nginx Docker image if not present
     if ! docker images -q "$IMAGE_NAME" &>/dev/null #doubt about exclamation mark
     then
@@ -129,4 +127,4 @@ else
 fi
 
 # Call the function with the image name as an argument
-nginx_setup "nginx"
+nginx_setup "$IMAGE_NAME"
