@@ -72,9 +72,7 @@ Use command ```helm fetch harbor/harbor --untar``` to download/unzip all configu
 
     ![local hosts](image-5.png)
 
-2. IngressClassName: is an attribute used to specify the class name of an Ingress controller in Kubernetes. It's part of the Ingress resource configuration and is used to associate an Ingress resource with a specific Ingress controller. In this case was setup ```nginx``` as the ClassName.
-
-3. Added the following annotation ```nginx.org/client-max-body-size: "0"``` and is used to set the maximum allowed size of the client request body in an NGINX-based Ingress controller configuration in Kubernetes.  Setting it to a specific value (in this case, "0") implies there is no size limit enforced by NGINX itself. A value of "0" means "unlimited" or "no restriction" on the client request body size. In this case is helpful so that we can upload large docker images without any size limit issue.
+2. IngressClassNaKubernetes.  Setting it to a specific value (in this case, "0") implies there is no size limit enforced by NGINX itself. A value of "0" means "unlimited" or "no restriction" on the client request body size. In this case is helpful so that we can upload large docker images without any size limit issue.
 
 ![image-6](image.png)
 
@@ -106,4 +104,6 @@ Use command ```helm fetch harbor/harbor --untar``` to download/unzip all configu
 - Minikube solution for Ingress access https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns/
 - YT video of Harbor Private Container Registry in Kubernetes cluster https://www.youtube.com/watch?v=o2vhyZO8A8I&t=186s&ab_channel=EngineeringwithMorris
 
-# ./test2.sh /home/aarayav/root/devops-challenge/k8s-scripts/nginx_server/ nginx-image nginx-project
+# ./test2.sh /home/aarayav/root/devops-challenge/k8s-scripts/nginx_server/ nginx-image nginx-projectme: is an attribute used to specify the class name of an Ingress controller in Kubernetes. It's part of the Ingress resource configuration and is used to associate an Ingress resource with a specific Ingress controller. In this case was setup ```nginx``` as the ClassName.
+
+3. Added the following annotation ```nginx.org/client-max-body-size: "0"``` and is used to set the maximum allowed size of the client request body in an NGINX-based Ingress controller configuration in 
